@@ -1,7 +1,26 @@
-// Loads data/schedule.yml + data/lessons.yml and renders the page named in <body data-page="...">.
+// Shared engine for all course sites. Loads the course folder's course.yml, schedule.yml and
+// lessons.yml and renders the page named in <body data-page="...">.
+// Everything course-specific (name, colors, sources, footer) comes from course.yml.
 
 const LEVELS = { beginner: "מתחילים", intermediate: "בינוני", advanced: "מתקדם" };
-const SOURCES = { microbit: "micro:bit", tinybit: "Tiny:bit", project: "פרויקט" };
+let COURSE = {}; // course.yml
+
+function sourceOf(id) {
+  return (COURSE.sources || []).find((s) => s.id === id);
+}
+function sourceLabel(id) {
+  return sourceOf(id)?.label || id || "";
+}
+// Color class for a source: its color (1/2) from course.yml, else `fallback`.
+function sourceTone(id, fallback = "") {
+  const c = Number(sourceOf(id)?.color);
+  return c === 1 || c === 2 ? `tone-${c}` : fallback;
+}
+// Parts of the course are colored by their order in schedule.yml.
+function partTone(schedule, partId) {
+  const i = (schedule.parts || []).findIndex((p) => p.id === partId);
+  return i === 0 || i === 1 ? `tone-${i + 1}` : "tone-course";
+}
 
 // Small stroke icon set (Lucide paths), drawn inline so they follow currentColor.
 const ICON_PATHS = {
@@ -33,15 +52,23 @@ function esc(s) {
   return String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
 }
 
-// Light formatting for text in the YAML: **bold** and [[block name]].
+// Light formatting for text in the YAML: **bold**, [[block name]] and [text](link).
 function fmt(s) {
   return esc(s)
     .replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>")
-    .replace(/\[\[(.+?)\]\]/g, '<code class="block-name" dir="auto">$1</code>');
+    .replace(/\[\[(.+?)\]\]/g, '<code class="block-name" dir="auto">$1</code>')
+    .replace(/\[([^\[\]]+)\]\(([^()\s]+)\)/g, (m, text, url) => {
+      if (/^https?:\/\//i.test(url)) return `<a href="${url}" target="_blank" rel="noopener">${text}</a>`;
+      if (!/^[a-z][a-z0-9+.-]*:/i.test(url)) return `<a href="${url}">${text}</a>`; // relative link
+      return m;
+    });
 }
 // Same text with the markup stripped, for search and snippets.
 function plain(s) {
-  return String(s ?? "").replace(/\*\*(.+?)\*\*/g, "$1").replace(/\[\[(.+?)\]\]/g, "$1");
+  return String(s ?? "")
+    .replace(/\*\*(.+?)\*\*/g, "$1")
+    .replace(/\[\[(.+?)\]\]/g, "$1")
+    .replace(/\[([^\[\]]+)\]\(([^()\s]+)\)/g, "$1");
 }
 
 function list(items, ordered = false) {
@@ -51,9 +78,11 @@ function list(items, ordered = false) {
 }
 
 function tags(lesson) {
-  const out = [`<span class="tag src-${lesson.source}">${SOURCES[lesson.source] || lesson.source}</span>`];
-  if (lesson.level) out.push(`<span class="tag level-${lesson.level}">${LEVELS[lesson.level] || lesson.level}</span>`);
-  if (lesson.needs_v2) out.push(`<span class="tag v2">דורש micro:bit V2</span>`);
+  const out = [];
+  if (lesson.source) out.push(`<span class="tag ${sourceTone(lesson.source, "tone-course")}">${esc(sourceLabel(lesson.source))}</span>`);
+  if (lesson.level) out.push(`<span class="tag level-${esc(lesson.level)}">${esc(LEVELS[lesson.level] || lesson.level)}</span>`);
+  for (const [field, label] of Object.entries(COURSE.flags || {}))
+    if (lesson[field] === true) out.push(`<span class="tag flag">${esc(label)}</span>`);
   return out.join("");
 }
 
@@ -65,11 +94,36 @@ function warn(container, messages) {
   container.prepend(div);
 }
 
+// course.yml is optional: if it's missing or broken the site still works, with a warning.
+async function loadCourse() {
+  try {
+    const c = await loadYaml("course.yml");
+    COURSE = c && typeof c === "object" ? c : {};
+    return [];
+  } catch (e) {
+    COURSE = {};
+    return [`לא הצלחתי לקרוא את הקובץ course.yml (${e.message}). האתר מוצג בלי הגדרות הקורס – בדקו את הקובץ.`];
+  }
+}
+
+function applyCourse() {
+  const c = COURSE;
+  if (c.theme) document.documentElement.dataset.theme = c.theme;
+  document.querySelectorAll(".course-name").forEach((a) => (a.textContent = c.title || ""));
+  if (c.footer) document.querySelector(".site-footer")?.insertAdjacentHTML("beforeend", ` · ${fmt(c.footer)}`);
+  const sub = document.body.dataset.title;
+  if (c.title) document.title = sub ? `${c.title} – ${sub}` : c.title;
+}
+
 async function loadAll() {
-  const [schedule, lessonsData] = await Promise.all([loadYaml("data/schedule.yml"), loadYaml("data/lessons.yml")]);
+  const [schedule, lessonsData] = await Promise.all([loadYaml("schedule.yml"), loadYaml("lessons.yml")]);
   const lessons = {};
   for (const l of lessonsData.lessons || []) lessons[l.id] = l;
   const problems = [];
+  if (COURSE.sources)
+    for (const l of Object.values(lessons))
+      if (l.source && !sourceOf(l.source))
+        problems.push(`בשיעור "${l.id}" המקור (source) "${l.source}" לא מופיע ברשימת sources בקובץ course.yml`);
   const sessionOf = {};
   for (const s of schedule.sessions || []) {
     for (const id of s.lessons || []) {
@@ -124,7 +178,7 @@ function buildIndex({ lessons, sessionOf }, view) {
       [2, s ? s.title : ""],
       [2, l.summary],
       [1, [st.intro, st.goal, st.concept, st.tip, st.challenge, ...(st.steps || [])].map(plain).join(" ")],
-      [1, SOURCES[l.source] || ""],
+      [1, sourceLabel(l.source)],
     ];
     if (view === "guide") fields.push([1, [g.prep, g.extension, ...(g.objectives || []), ...(g.materials || []), ...(g.common_mistakes || [])].join(" ")]);
     entries.push({ lesson: l, session: s, fields: fields.map(([w, t]) => [w, norm(t)]) });
@@ -226,18 +280,23 @@ function sessionsHtml({ schedule, lessons }, view, partId) {
     })
     .join("");
   return `${part?.description ? `<p class="part-desc">${fmt(part.description)}</p>` : ""}
-    <ol class="session-list part-${esc(partId)}">${rows}</ol>`;
+    <ol class="session-list ${partTone(schedule, partId)}">${rows}</ol>`;
 }
 
-function resultsHtml(results, query, view) {
+function searchExamples() {
+  return (COURSE.search_examples || []).map(String).filter(Boolean);
+}
+
+function resultsHtml({ schedule }, results, query, view) {
+  const ex = searchExamples();
   if (!results.length)
-    return `<div class="empty"><p><strong>לא מצאנו שיעור כזה.</strong></p><p>נסו מילה אחרת, למשל: לב, רדיו, חיישן, מוזיקה, או מספר מפגש.</p></div>`;
+    return `<div class="empty"><p><strong>לא מצאנו שיעור כזה.</strong></p><p>נסו מילה אחרת${ex.length ? `, למשל: ${esc(ex.join(", "))},` : ""} או מספר מפגש.</p></div>`;
   return `<ul class="results">${results
     .map(({ lesson: l, session: s }) => {
       const where = s ? `מפגש ${esc(s.num)} · ${esc(s.title)}` : "מאגר שיעורים נוסף";
       const blurb = l.summary || l.student?.goal || "";
       const why = matchSnippet(l, query, `${l.title} ${blurb}`);
-      return `<li class="result part-${esc(s?.part || l.source)}">
+      return `<li class="result ${s ? partTone(schedule, s.part) : sourceTone(l.source)}">
         <a href="${lessonUrl(l.id, view)}">
           <span class="result-title">${highlight(l.title, query)}</span>
           <span class="result-where">${where}</span>
@@ -260,8 +319,8 @@ function renderCourse(main, data, view) {
     .map((p) => {
       const nums = (data.schedule.sessions || []).filter((s) => s.part === p.id).map((s) => s.num);
       const range = nums.length ? `${Math.min(...nums)}–${Math.max(...nums)}` : "";
-      return `<button type="button" role="tab" class="part-tab part-${esc(p.id)}" data-part="${esc(p.id)}">
-        <span class="part-tab-name">${esc(p.short || SOURCES[p.id] || p.title)}</span>
+      return `<button type="button" role="tab" class="part-tab ${partTone(data.schedule, p.id)}" data-part="${esc(p.id)}">
+        <span class="part-tab-name">${esc(p.short || sourceOf(p.id)?.label || p.title)}</span>
         <span class="part-tab-range">מפגשים <bdi dir="ltr">${range}</bdi></span>
       </button>`;
     })
@@ -272,7 +331,7 @@ function renderCourse(main, data, view) {
       <label for="q" class="visually-hidden">חיפוש שיעור</label>
       ${icon("search", "search-icon")}
       <input id="q" type="search" autocomplete="off" spellcheck="false"
-        placeholder="חיפוש: לב, חיישן אור, רדיו, מוזיקה…" value="${esc(params.get("q") || "")}">
+        placeholder="${esc(searchExamples().length ? `חיפוש: ${searchExamples().join(", ")}…` : "חיפוש שיעור…")}" value="${esc(params.get("q") || "")}">
       <button type="button" class="search-clear" aria-label="ניקוי החיפוש" hidden>${icon("x")}</button>
     </div>
     <p class="search-status" aria-live="polite"></p>
@@ -307,7 +366,7 @@ function renderCourse(main, data, view) {
     if (!active) { status.textContent = ""; return; }
     const results = search(index, q);
     status.textContent = results.length ? `נמצאו ${results.length} שיעורים` : "";
-    resultsView.innerHTML = resultsHtml(results, q, view);
+    resultsView.innerHTML = resultsHtml(data, results, q, view);
   }
 
   root.querySelectorAll(".part-tab").forEach((b) =>
@@ -345,6 +404,7 @@ function renderBank(main, { schedule, lessons }) {
   const src = main.querySelector("#f-source");
   const lvl = main.querySelector("#f-level");
   const q = main.querySelector("#f-search");
+  for (const s of COURSE.sources || []) src.add(new Option(s.label || s.id, s.id));
 
   function draw() {
     const term = norm(q.value);
@@ -371,7 +431,10 @@ function renderBank(main, { schedule, lessons }) {
   draw();
 }
 
-function setupTabs(main) {
+function setupTabs(main, { schedule }) {
+  const tab = main.querySelector('[data-tab="tab-sessions"]');
+  const n = (schedule.sessions || []).length;
+  if (tab && n) tab.textContent = `${n} המפגשים`;
   const buttons = main.querySelectorAll(".tabs button");
   buttons.forEach((b) =>
     b.addEventListener("click", () => {
@@ -400,7 +463,9 @@ function makecodeUrl(url) {
   }
 }
 
+// Code buttons for the course's platform (course.yml → platform). Only "makecode" so far.
 function codeHtml(links) {
+  if (COURSE.platform !== "makecode") return "";
   const programs = links.code || [];
   if (!programs.length) {
     if (!links.makecode) return "";
@@ -453,7 +518,7 @@ function renderLesson(main, { schedule, lessons, sessionOf }) {
     main.innerHTML = `<div class="empty"><p><strong>השיעור לא נמצא.</strong></p><p><a href="student.html">חזרה לרשימת המפגשים</a></p></div>`;
     return;
   }
-  document.title = `${l.title} | מעבדת מיקרוביט – טכנודע`;
+  document.title = COURSE.title ? `${l.title} | ${COURSE.title} – טכנודע` : `${l.title} – טכנודע`;
   const session = sessionOf[id];
   const back = `${view === "guide" ? "guide.html" : "student.html"}${session ? `#${session.part}` : ""}`;
   const st = l.student || {};
@@ -507,23 +572,97 @@ function renderLesson(main, { schedule, lessons, sessionOf }) {
   main.innerHTML = html;
 }
 
+/* ------------------------------------------------------------------ */
+/*  Guide password                                                     */
+/* ------------------------------------------------------------------ */
+
+// Guide pages ask for course.yml → guide_password. This only keeps students from wandering in:
+// the site is static, so anyone who reads the files can find the password.
+function guidePassword() {
+  return String(COURSE.guide_password ?? "").trim();
+}
+function guideKey() {
+  return `guide-password:${location.pathname.replace(/[^/]*$/, "")}`;
+}
+function guideUnlocked() {
+  const pass = guidePassword();
+  if (!pass) return true;
+  try {
+    return localStorage.getItem(guideKey()) === pass;
+  } catch {
+    return false;
+  }
+}
+
+function askGuidePassword(main, studentHref) {
+  return new Promise((resolve) => {
+    const saved = main.innerHTML;
+    main.innerHTML = `<div class="gate">
+      <h1>כניסה למדריכים</h1>
+      <p>הדף הזה מיועד למדריכים. הקלידו את הסיסמה כדי להמשיך.</p>
+      <form novalidate>
+        <label for="guide-password" class="visually-hidden">סיסמה</label>
+        <input id="guide-password" type="password" autocomplete="current-password" placeholder="סיסמה">
+        <button class="btn" type="submit">כניסה</button>
+      </form>
+      <p class="gate-error" role="alert"></p>
+      <p><a href="${esc(studentHref)}">לדף התלמידים</a></p>
+    </div>`;
+    const input = main.querySelector("#guide-password");
+    const error = main.querySelector(".gate-error");
+    input.focus();
+    main.querySelector("form").addEventListener("submit", (e) => {
+      e.preventDefault();
+      if (input.value.trim() !== guidePassword()) {
+        error.textContent = "הסיסמה לא נכונה. נסו שוב.";
+        input.select();
+        return;
+      }
+      try {
+        localStorage.setItem(guideKey(), guidePassword());
+      } catch {}
+      main.innerHTML = saved;
+      resolve();
+    });
+  });
+}
+
 document.addEventListener("DOMContentLoaded", async () => {
   const page = document.body.dataset.page;
   const main = document.querySelector("main");
-  if (page === "home") return;
+  const problems = await loadCourse();
+  applyCourse();
+
+  if (page === "home") {
+    const title = main.querySelector("#welcome-title");
+    const lead = main.querySelector("#welcome");
+    if (title) title.textContent = COURSE.welcome_title || COURSE.title || "";
+    if (lead) lead.innerHTML = fmt(COURSE.welcome || "");
+    warn(main, problems);
+    return;
+  }
+
+  const params = new URLSearchParams(location.search);
+  const guideView = page === "guide" || (page === "lesson" && params.get("view") === "guide");
+  if (guideView && !guideUnlocked()) {
+    const studentHref = page === "lesson" && params.get("id") ? lessonUrl(params.get("id"), "student") : "student.html";
+    await askGuidePassword(main, studentHref);
+  }
+
   let data;
   try {
     data = await loadAll();
   } catch (e) {
     main.innerHTML = `<div class="warning">${esc(e.message)}. אם פתחתם את הקובץ ישירות מהמחשב – צריך להריץ שרת מקומי (ראו README).</div>`;
+    warn(main, problems);
     return;
   }
   if (page === "student") renderCourse(main, data, "student");
   if (page === "guide") {
     renderCourse(main, data, "guide");
     renderBank(main, data);
-    setupTabs(main);
+    setupTabs(main, data);
   }
   if (page === "lesson") renderLesson(main, data);
-  warn(main, data.problems);
+  warn(main, [...problems, ...data.problems]);
 });

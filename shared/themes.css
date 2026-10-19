@@ -1,0 +1,87 @@
+/* ערכות צבעים לקורסים.
+   כל קורס בוחר ערכה בשדה theme בקובץ course.yml שלו, והמנוע שם אותה על <html data-theme="...">.
+   משתנים בכל ערכה:
+     --course / --course-ink / --course-tint   הצבע הראשי של הקורס: כותרת, כפתורים, קישורים
+     --part-1 / --part-1-ink / --part-1-tint   צבע משני ראשון: חלק א׳ של הקורס, כפתור "אני תלמיד/ה"
+     --part-2 / --part-2-ink / --part-2-tint   צבע משני שני: חלק ב׳ של הקורס
+   ניגודיות טקסט מול רקע: לפחות 4.5:1.
+   מצב כהה: הערכים כבר מוגדרים כאן (html.dark), והמתג עצמו יתווסף במשימה M3. */
+
+/* Default: Technoda purple. */
+:root,
+:root[data-theme="microbit"] {
+  --course: #7b4fa8;
+  --course-ink: #5d3785;
+  --course-tint: #f3eefa;
+  --part-1: #1f88b8;
+  --part-1-ink: #17698f;
+  --part-1-tint: #e6f4fa;
+  --part-2: #d4561a;
+  --part-2-ink: #9c3a0c;
+  --part-2-tint: #fdeee6;
+}
+
+:root[data-theme="fll"] {
+  --course: #0f8a5f;
+  --course-ink: #0a6646;
+  --course-tint: #e5f4ee;
+  --part-1: #1f88b8;
+  --part-1-ink: #17698f;
+  --part-1-tint: #e6f4fa;
+  --part-2: #d4561a;
+  --part-2-ink: #9c3a0c;
+  --part-2-tint: #fdeee6;
+}
+
+:root[data-theme="lego"] {
+  --course: #d9541e;
+  --course-ink: #a33a0f;
+  --course-tint: #fdeee6;
+  --part-1: #1f88b8;
+  --part-1-ink: #17698f;
+  --part-1-tint: #e6f4fa;
+  --part-2: #7b4fa8;
+  --part-2-ink: #5d3785;
+  --part-2-tint: #f3eefa;
+}
+
+/* Dark mode values (switched on in M3). */
+:root.dark,
+:root.dark[data-theme="microbit"] {
+  --course: #b58fe0;
+  --course-ink: #d2b8f0;
+  --course-tint: #2e2440;
+  --part-1: #5cb8e0;
+  --part-1-ink: #8fd0ec;
+  --part-1-tint: #16303c;
+  --part-2: #f08a55;
+  --part-2-ink: #f5ac85;
+  --part-2-tint: #3d2216;
+}
+:root.dark[data-theme="fll"] {
+  --course: #4cc796;
+  --course-ink: #86dcb9;
+  --course-tint: #15332a;
+  --part-1: #5cb8e0;
+  --part-1-ink: #8fd0ec;
+  --part-1-tint: #16303c;
+  --part-2: #f08a55;
+  --part-2-ink: #f5ac85;
+  --part-2-tint: #3d2216;
+}
+:root.dark[data-theme="lego"] {
+  --course: #f08a55;
+  --course-ink: #f5ac85;
+  --course-tint: #3d2216;
+  --part-1: #5cb8e0;
+  --part-1-ink: #8fd0ec;
+  --part-1-tint: #16303c;
+  --part-2: #b58fe0;
+  --part-2-ink: #d2b8f0;
+  --part-2-tint: #2e2440;
+}
+
+/* Tones: a component takes a part color by class (tone-1 / tone-2), or the course color. */
+.tone-1 { --tone: var(--part-1); --tone-ink: var(--part-1-ink); --tone-tint: var(--part-1-tint); }
+.tone-2 { --tone: var(--part-2); --tone-ink: var(--part-2-ink); --tone-tint: var(--part-2-tint); }
+.tone-course { --tone: var(--course); --tone-ink: var(--course-ink); --tone-tint: var(--course-tint); }
