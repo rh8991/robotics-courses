@@ -444,11 +444,22 @@ function guideHtml(l) {
   </details>`;
 }
 
+// The lesson page serves both views: show the guide link and mark the current page to match.
+function markNav(view) {
+  const nav = document.querySelector(".site-header nav");
+  if (!nav) return;
+  if (view === "guide" && !nav.querySelector('a[href="guide.html"]'))
+    nav.insertAdjacentHTML("beforeend", '<a href="guide.html">מדריכים</a>');
+  const cur = nav.querySelector(`a[href="${view === "guide" ? "guide.html" : "student.html"}"]`);
+  if (cur) cur.setAttribute("aria-current", "page");
+}
+
 function renderLesson(main, { schedule, lessons, sessionOf }) {
   const params = new URLSearchParams(location.search);
   const id = params.get("id");
   const view = params.get("view") === "guide" ? "guide" : "student";
   const l = lessons[id];
+  markNav(view);
   if (!l) {
     main.innerHTML = `<div class="empty"><p><strong>השיעור לא נמצא.</strong></p><p><a href="student.html">חזרה לרשימת המפגשים</a></p></div>`;
     return;
@@ -497,6 +508,16 @@ function renderLesson(main, { schedule, lessons, sessionOf }) {
     html += `<nav class="next-up" aria-label="עוד במפגש הזה"><span>עוד במפגש הזה:</span>${siblings
       .map((x) => `<a href="${lessonUrl(x, view)}">${esc(lessons[x].title)}</a>`)
       .join("")}</nav>`;
+
+  // Previous / next lesson in course order (bank lessons that aren't scheduled have none).
+  const order = (schedule.sessions || []).flatMap((s) => (s.lessons || []).filter((x) => lessons[x]));
+  const at = order.indexOf(id);
+  if (at !== -1) {
+    const prev = order[at - 1], next = order[at + 1];
+    html += `<nav class="pager" aria-label="מעבר בין שיעורים">${
+      prev ? `<a class="prev" href="${lessonUrl(prev, view)}"><small>${icon("back")}השיעור הקודם</small>${esc(lessons[prev].title)}</a>` : "<span></span>"
+    }${next ? `<a class="next" href="${lessonUrl(next, view)}"><small>השיעור הבא${icon("back", "flip")}</small>${esc(lessons[next].title)}</a>` : ""}</nav>`;
+  }
 
   const foot = [];
   if (links.source) foot.push(`<a href="${esc(links.source)}" target="_blank" rel="noopener">${icon("external")}השיעור המקורי</a>`);
