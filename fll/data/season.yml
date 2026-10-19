@@ -1,0 +1,427 @@
+# ============================================================
+#  לוח הבקרה למדריך – כל המשימות עד התחרות
+#  (הקובץ הזה בונה את העמוד control.html)
+# ============================================================
+#  איך עורכים:
+#  - season    – שם העונה ותאריך התחרות (הספירה לאחור מחושבת ממנו).
+#  - areas     – תחומי העבודה. כל משימה משויכת לתחום אחד (area).
+#  - phases    – שלבי העונה לפי הסדר. לכל שלב:
+#       id     – מזהה באנגלית, בלי רווחים (לא לשנות אחרי שהתחלתם לסמן!)
+#       title  – שם השלב       emoji – אייקון (לא חובה)
+#       from / to – תאריכי השלב בפורמט 2026-10-20 (שנה-חודש-יום)
+#       goal   – משפט אחד: מה צריך להיות מוכן בסוף השלב
+#       tasks  – רשימת משימות. לכל משימה:
+#           id    – מזהה קצר באנגלית, ייחודי (הסימון ✓ נשמר לפיו – לא לשנות!)
+#           text  – מה עושים          who  – מדריך / קבוצה
+#           due   – תאריך יעד (לא חובה)   area – מזהה תחום מתוך areas
+#           link  – קישור (לא חובה): { title: "...", url: "..." }
+#           verify: true – מציג תגית "לבדוק" (מידע שעוד לא אומת מול FIRST ישראל)
+#  - judging   – ארבעת תחומי השיפוט: מה השופטים בודקים (look_for) + rubric – קישור למחוון.
+#  - rating_levels – ארבע הדרגות לדירוג העצמי (מהנמוכה לגבוהה).
+#  - links     – קישורים וקבצים, מחולקים לקבוצות.
+#  עיצוב בתוך טקסט:  **מודגש**
+#  שימו לב לרווחים בתחילת השורה – הם חשובים!
+# ============================================================
+
+season:
+  title: "FIRST® LEGO® League · עונת BIOGLOW™ 2026–2027"
+  competition:
+    title: "יום התחרות"
+    date: "2027-01-28"
+    verify: true          # תאריך מתוך עמוד ההיכרות – לאמת מול FIRST ישראל
+  intro: "כל מה שצריך לעשות מעכשיו ועד התחרות, לפי שלבים. מסמנים ✓ כשמשימה בוצעה – הסימונים נשמרים בדפדפן הזה."
+
+areas:
+  - id: admin
+    title: "מנהלה"
+    emoji: "🗂️"
+  - id: team
+    title: "קבוצה וערכי ליבה"
+    emoji: "🤝"
+  - id: project
+    title: "פרויקט חדשנות"
+    emoji: "🔬"
+  - id: design
+    title: "תכנון הרובוט"
+    emoji: "🛠️"
+  - id: game
+    title: "משחק הרובוט"
+    emoji: "🤖"
+
+phases:
+
+  # ---------- לאורך כל העונה ----------
+  - id: admin
+    title: "מנהלה – לאורך כל העונה"
+    emoji: "🗂️"
+    from: "2026-10-18"
+    to: "2027-01-28"
+    goal: "הקבוצה רשומה, הציוד במקום, ההורים מעודכנים ויש את כל האישורים."
+    tasks:
+      - id: adm-registered
+        text: "לוודא שהקבוצה רשומה ב-FIRST ישראל ויש מספר קבוצה"
+        who: מדריך
+        due: "2026-10-27"
+        area: admin
+        link: { title: "הצטרפות ל-FLL", url: "https://firstisrael.org.il/fll/start-a-team" }
+        verify: true
+      - id: adm-kit
+        text: "ערכת האתגר והמגרש (מחצלת) הגיעו – לבדוק שכל השקיות הממוספרות קיימות"
+        who: מדריך
+        due: "2026-10-27"
+        area: admin
+      - id: adm-contacts
+        text: "רשימת קשר: טלפון הורה לכל ילד, אלרגיות וצרכים מיוחדים"
+        who: מדריך
+        due: "2026-10-27"
+        area: admin
+      - id: adm-photo
+        text: "אישורי הורים לצילום ולפרסום תמונות (לפני שמעלים תמונה לאתר!)"
+        who: מדריך
+        due: "2026-11-03"
+        area: admin
+      - id: adm-lecture
+        text: "להירשם להרצאה המקוונת לקבוצות של FIRST ישראל (חלק מהמחקר של פרויקט החדשנות)"
+        who: מדריך
+        due: "2026-11-03"
+        area: project
+        link: { title: "FIRST ישראל – FLL", url: "https://firstisrael.org.il/fll" }
+        verify: true
+      - id: adm-updates
+        text: "לבדוק פעם בשבועיים אם פורסמו עדכוני אתגר (Challenge Updates) – הם משנים חוקים במשחק"
+        who: מדריך
+        area: game
+        link: { title: "חומרי האתגר", url: "https://www.firstinspires.org/resource-library/fll/challenge/challenge-and-resources" }
+      - id: adm-event-register
+        text: "רישום לתחרות ותשלום דמי השתתפות"
+        who: מדריך
+        due: "2026-12-15"
+        area: admin
+        link: { title: "עלויות", url: "https://firstisrael.org.il/fll/challenge/pricing" }
+        verify: true
+      - id: adm-parents-event
+        text: "הודעה להורים על יום התחרות: מקום, שעות, הסעה, הורים מלווים"
+        who: מדריך
+        due: "2027-01-14"
+        area: admin
+
+  # ---------- שלב 1 ----------
+  - id: team
+    title: "גיבוש הקבוצה"
+    emoji: "🤝"
+    from: "2026-10-18"
+    to: "2026-11-03"
+    goal: "יש קבוצה עם שם, כללים ותפקידים מתחלפים – והילדים מכירים את האתגר."
+    tasks:
+      - id: team-first
+        text: "שיעור ראשון – לפי עמוד ההיכרות"
+        who: מדריך
+        due: "2026-10-27"
+        area: team
+        link: { title: "עמוד ההיכרות", url: "index.html" }
+      - id: team-rules
+        text: "כותבים יחד 'חוזה קבוצתי': איך מדברים, איך מחליטים, איך מסדרים"
+        who: קבוצה
+        area: team
+      - id: team-name
+        text: "בוחרים שם לקבוצה (ואפשר גם לוגו / חולצה)"
+        who: קבוצה
+        area: team
+      - id: team-notebook
+        text: "פותחים יומן הנדסי של הקבוצה (מחברת או תיקייה משותפת) – מתעדים בו כל מפגש"
+        who: קבוצה
+        area: design
+      - id: team-roles
+        text: "טבלת תפקידים מתחלפים: בנייה, תכנות, מחקר, אסטרטגיה, תיעוד"
+        who: מדריך
+        area: team
+      - id: team-values
+        text: "פעילות על ששת ערכי הליבה – הילדים מוצאים דוגמה לכל ערך מהמפגשים"
+        who: קבוצה
+        area: team
+
+  # ---------- שלב 2 ----------
+  - id: models
+    title: "דגמי משימות והיכרות עם הרובוט"
+    emoji: "🧱"
+    from: "2026-10-27"
+    to: "2026-11-24"
+    goal: "כל דגמי המשימות בנויים ועל המגרש, ולכל ילד יש בסיס בנהיגה ותכנות של הרובוט."
+    tasks:
+      - id: mod-build
+        text: "בונים את כל דגמי המשימות לפי הוראות הבנייה"
+        who: קבוצה
+        due: "2026-11-10"
+        area: game
+        link: { title: "הנחיות בנייה", url: "https://firstisrael.org.il/fll/challenge/building-instructions" }
+      - id: mod-place
+        text: "מציבים ומדביקים את הדגמים על המגרש בדיוק לפי מדריך המשחק"
+        who: קבוצה
+        due: "2026-11-17"
+        area: game
+      - id: mod-rules
+        text: "קוראים יחד את חוקי משחק הרובוט (מדריך המשחק) – מה מותר, מה אסור, איך מקבלים נקודות"
+        who: קבוצה
+        area: game
+        link: { title: "חומרי משחק הרובוט", url: "https://www.firstinspires.org/resource-library/fll/robot-game-resources" }
+      - id: mod-base
+        text: "מרכיבים רובוט בסיס (driving base) ללימוד"
+        who: קבוצה
+        area: design
+      - id: mod-code
+        text: "תרגילי תכנות בסיסיים: נסיעה ישרה, פנייה מדויקת, עצירה לפי חיישן"
+        who: קבוצה
+        area: game
+      - id: mod-accuracy
+        text: "ניסוי דיוק: 5 נסיעות לאותה נקודה – מודדים ומתעדים ביומן"
+        who: קבוצה
+        area: design
+
+  # ---------- שלב 3 ----------
+  - id: research
+    title: "פרויקט חדשנות – בעיה ומחקר"
+    emoji: "🔎"
+    from: "2026-11-03"
+    to: "2026-12-08"
+    goal: "הקבוצה בחרה בעיה אמיתית מעולם הביולוגיה, חקרה אותה ודיברה עם מומחה."
+    tasks:
+      - id: res-bring
+        text: "כל ילד מציג את הבעיה שהביא (משימת הבית מהשיעור הראשון)"
+        who: קבוצה
+        due: "2026-11-03"
+        area: project
+      - id: res-choose
+        text: "בוחרים יחד בעיה אחת של הקבוצה (הצבעה / טבלת שיקולים)"
+        who: קבוצה
+        due: "2026-11-10"
+        area: project
+      - id: res-lecture
+        text: "צופים בהרצאה המקוונת לקבוצות ורושמים 3 דברים שלמדנו"
+        who: קבוצה
+        area: project
+        verify: true
+      - id: res-sources
+        text: "אוספים מידע מ-3 מקורות לפחות (כתבה, אתר מוסמך, ספר) ומתעדים ביומן"
+        who: קבוצה
+        area: project
+      - id: res-expert
+        text: "מוצאים מומחה (חוקר, וטרינר, רשות הטבע והגנים...) ומקיימים איתו שיחה"
+        who: מדריך
+        due: "2026-12-01"
+        area: project
+      - id: res-questions
+        text: "מכינים מראש שאלות למומחה – הילדים שואלים, לא המדריך"
+        who: קבוצה
+        area: project
+
+  # ---------- שלב 4 ----------
+  - id: strategy
+    title: "משחק הרובוט – אסטרטגיה ותכנות"
+    emoji: "🤖"
+    from: "2026-11-24"
+    to: "2027-01-12"
+    goal: "יש תוכנית ריצות, אביזרים ותוכניות שמבצעות את המשימות שנבחרו – באופן עקבי."
+    tasks:
+      - id: str-table
+        text: "טבלת אסטרטגיה: לכל משימה – נקודות, זמן משוער, קושי, מיקום על המגרש"
+        who: קבוצה
+        due: "2026-12-01"
+        area: game
+      - id: str-runs
+        text: "בוחרים משימות ומחלקים אותן ל'ריצות' (כל יציאה מאזור השיגור)"
+        who: קבוצה
+        due: "2026-12-08"
+        area: game
+      - id: str-attach
+        text: "מתכננים ובונים אביזרים (attachments) שמתחלפים מהר"
+        who: קבוצה
+        area: design
+      - id: str-code
+        text: "מתכנתים ריצה אחרי ריצה – ובודקים כל אחת 5 פעמים לפני שממשיכים"
+        who: קבוצה
+        area: game
+      - id: str-log
+        text: "טבלת תוצאות אימון: כמה נקודות בכל ניסיון, מה נכשל ולמה"
+        who: קבוצה
+        area: game
+      - id: str-full
+        text: "ריצה מלאה של 2:30 דקות כולל החלפת אביזרים – בזמן אמת"
+        who: קבוצה
+        due: "2027-01-05"
+        area: game
+
+  # ---------- שלב 5 ----------
+  - id: solution
+    title: "פרויקט חדשנות – פתרון ושיתוף"
+    emoji: "💡"
+    from: "2026-12-08"
+    to: "2027-01-12"
+    goal: "יש פתרון עם אב-טיפוס, הוא שותף עם אנשים שזה נוגע להם, ויש הצגה מוכנה."
+    tasks:
+      - id: sol-ideas
+        text: "סיעור מוחות לפתרונות ובחירת פתרון אחד (למה דווקא הוא?)"
+        who: קבוצה
+        due: "2026-12-15"
+        area: project
+      - id: sol-proto
+        text: "בונים אב-טיפוס / מודל / שרטוט של הפתרון"
+        who: קבוצה
+        area: project
+      - id: sol-share
+        text: "משתפים את הפתרון עם מומחה או עם הקהל שסובל מהבעיה, ומקבלים משוב"
+        who: קבוצה
+        due: "2027-01-05"
+        area: project
+      - id: sol-improve
+        text: "משפרים את הפתרון לפי המשוב – ומתעדים מה השתנה"
+        who: קבוצה
+        area: project
+      - id: sol-present
+        text: "מכינים הצגה קצרה ויצירתית לחדר השיפוט (כל הילדים משתתפים)"
+        who: קבוצה
+        due: "2027-01-12"
+        area: project
+        verify: true    # לבדוק במדריך העונה כמה זמן מוקצב להצגה
+
+  # ---------- שלב 6 ----------
+  - id: robot-design
+    title: "תכנון הרובוט – תיעוד"
+    emoji: "🛠️"
+    from: "2026-12-15"
+    to: "2027-01-12"
+    goal: "הקבוצה יודעת להסביר איך תכננה, בדקה ושיפרה את הרובוט והקוד."
+    tasks:
+      - id: rd-versions
+        text: "מתעדים גרסאות של הרובוט והאביזרים: מה ניסינו, מה עבד, מה שינינו"
+        who: קבוצה
+        area: design
+      - id: rd-code
+        text: "מסדרים את הקוד: שמות ברורים, הערות, ותרשים של מבנה התוכניות"
+        who: קבוצה
+        area: design
+      - id: rd-sheet
+        text: "דף / פוסטר תכנון רובוט להצגה מול השופטים"
+        who: קבוצה
+        due: "2027-01-12"
+        area: design
+
+  # ---------- שלב 7 ----------
+  - id: rehearsal
+    title: "חזרות לשיפוט ולמשחק"
+    emoji: "🎯"
+    from: "2027-01-12"
+    to: "2027-01-26"
+    goal: "הקבוצה תרגלה שיפוט מדומה וריצות בתנאי תחרות, ויודעת מה לשפר."
+    tasks:
+      - id: reh-rubric
+        text: "דירוג עצמי לפי המחוונים (למטה בעמוד) – בוחרים 2 דברים לשפר"
+        who: קבוצה
+        due: "2027-01-14"
+        area: team
+      - id: reh-judging
+        text: "שיפוט מדומה: מדריך / הורה שואל שאלות כמו שופט"
+        who: מדריך
+        due: "2027-01-19"
+        area: team
+      - id: reh-values
+        text: "כל ילד מכין סיפור קצר: רגע שבו הקבוצה הראתה ערך ליבה"
+        who: קבוצה
+        area: team
+      - id: reh-matches
+        text: "3 ריצות מלאות ברצף בתנאי תחרות (שופט, שעון, בלי לגעת ברובוט)"
+        who: קבוצה
+        due: "2027-01-21"
+        area: game
+      - id: reh-backup
+        text: "גיבוי של כל קובצי הקוד (במחשב נוסף / בענן)"
+        who: מדריך
+        due: "2027-01-21"
+        area: game
+
+  # ---------- שלב 8 ----------
+  - id: event
+    title: "שבוע התחרות"
+    emoji: "🏆"
+    from: "2027-01-24"
+    to: "2027-01-28"
+    goal: "מגיעים ליום התחרות מוכנים, רגועים, ונהנים."
+    tasks:
+      - id: ev-pack
+        text: "רשימת ציוד: רובוט, אביזרים, סוללות טעונות + מטען, מחשב + קבצי קוד, חלקי חילוף, פוסטר / מצגת, חולצות"
+        who: מדריך
+        due: "2027-01-26"
+        area: admin
+      - id: ev-charge
+        text: "טעינת סוללות ובדיקת הרובוט ערב לפני"
+        who: קבוצה
+        due: "2027-01-27"
+        area: game
+      - id: ev-schedule
+        text: "לוח זמנים של היום (רישום, ריצות, חדרי שיפוט) – מודפס לכל ילד"
+        who: מדריך
+        due: "2027-01-27"
+        area: admin
+      - id: ev-after
+        text: "אחרי התחרות: שיחת סיכום, תודה לכולם וחגיגה 🎉"
+        who: מדריך
+        area: team
+
+judging:
+  - id: core-values
+    title: "ערכי ליבה"
+    emoji: "🤝"
+    summary: "איך הקבוצה עובדת יחד – נבדק לאורך כל היום, בחדר השיפוט וגם ליד המגרש."
+    rubric: "https://www.firstinspires.org/resource-library/fll/challenge/challenge-and-resources"
+    look_for:
+      - "גילוי, חדשנות, השפעה, הכלה, עבודת צוות והנאה – עם דוגמאות אמיתיות"
+      - "כל הילדים משתתפים ומדברים, לא רק אחד"
+      - "מקצועיות אדיבה: כבוד ועזרה גם לקבוצות אחרות"
+  - id: project
+    title: "פרויקט חדשנות"
+    emoji: "🔬"
+    summary: "בעיה אמיתית → מחקר → פתרון → שיתוף → הצגה."
+    rubric: "https://www.firstinspires.org/resource-library/fll/challenge/challenge-and-resources"
+    look_for:
+      - "זיהוי: הבעיה מוגדרת בבירור, והמחקר מגוון (כולל מומחה)"
+      - "תכנון: איך נבחר הפתרון ואיך חילקו את העבודה"
+      - "יצירה: אב-טיפוס / מודל שמסביר את הפתרון"
+      - "שיפור: שיתפו, קיבלו משוב ושיפרו"
+      - "הצגה: ברורה, יצירתית, וכל הקבוצה משתתפת"
+  - id: robot-design
+    title: "תכנון הרובוט"
+    emoji: "🛠️"
+    summary: "איך תכננו, בנו, תכנתו ושיפרו את הרובוט – והאם יודעים להסביר."
+    rubric: "https://www.firstinspires.org/resource-library/fll/challenge/challenge-and-resources"
+    look_for:
+      - "אסטרטגיה ברורה לבחירת משימות"
+      - "רובוט ואביזרים שנבנו ונבדקו בשיטתיות"
+      - "קוד מסודר ומובן, שימוש בחיישנים"
+      - "תיעוד של ניסויים ושיפורים לאורך הזמן"
+  - id: robot-game
+    title: "משחק הרובוט"
+    emoji: "🤖"
+    summary: "ריצות של 2:30 דקות על המגרש; נספר הניקוד הטוב ביותר."
+    look_for:
+      - "ריצות עקביות – אותו ניקוד בכל ניסיון"
+      - "החלפת אביזרים מהירה ומסודרת"
+      - "בלי נגיעות ברובוט מחוץ לאזור המותר (= הורדת נקודות)"
+
+rating_levels: ["מתחילים", "מתפתחים", "מיומנים", "מצטיינים"]
+
+links:
+  - group: "FIRST ישראל"
+    items:
+      - { emoji: "🏆", title: "אתגר העונה – המשחק והעונה", url: "https://firstisrael.org.il/fll/challenge/game-and-season" }
+      - { emoji: "🧱", title: "הנחיות בנייה – דגמי המשימות", url: "https://firstisrael.org.il/fll/challenge/building-instructions" }
+      - { emoji: "💳", title: "עלויות והרשמה", url: "https://firstisrael.org.il/fll/challenge/pricing" }
+      - { emoji: "🇮🇱", title: "FIRST ישראל – FLL", url: "https://firstisrael.org.il/fll" }
+      - { emoji: "🎓", title: "הרצאה מקוונת לקבוצות (דורשת הרשמה)", url: "https://firstisrael.org.il/fll", verify: true }
+  - group: "FIRST בינלאומי (אנגלית)"
+    items:
+      - { emoji: "📚", title: "חומרי האתגר: מדריך העונה, עדכונים, מחוונים", url: "https://www.firstinspires.org/resource-library/fll/challenge/challenge-and-resources" }
+      - { emoji: "🤖", title: "חומרי משחק הרובוט", url: "https://www.firstinspires.org/resource-library/fll/robot-game-resources" }
+      - { emoji: "📓", title: "חוברת עונת BIOGLOW (PDF)", url: "https://firstinspires.blob.core.windows.net/fll/challenge/2026-27/fll-challenge-bioglow-en.pdf", verify: true }
+      - { emoji: "🌿", title: "FIRST CANOPY™ – עונת המגוון הביולוגי", url: "https://www.firstinspires.org/first-canopy" }
+  - group: "באתר שלנו"
+    items:
+      - { emoji: "👋", title: "עמוד ההיכרות – השיעור הראשון", url: "index.html" }
