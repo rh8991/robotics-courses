@@ -1,0 +1,781 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>FLL – שיעור ראשון</title>
+<meta name="description" content="דף מנחה למדריך לשיעור הראשון עם קבוצת FIRST LEGO League – עונת BIOGLOW">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #f6f8f5;
+    --surface: #ffffff;
+    --surface-2: #eef3ec;
+    --text: #17221b;
+    --muted: #5b6a60;
+    --line: #d9e2d8;
+    --accent: #0f8a5f;
+    --accent-2: #6a3fd1;
+    --glow: #36e3a0;
+    --warn: #c2410c;
+    --warn-bg: #fff4ea;
+    --s1: #0f8a5f;   /* פתיחה */
+    --s2: #2563eb;   /* בנייה */
+    --s3: #9333ea;   /* סיכום */
+    --shadow: 0 1px 2px rgba(0,0,0,.05), 0 6px 20px rgba(0,0,0,.06);
+    --radius: 16px;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #0d1411; --surface: #141d18; --surface-2: #1b2620; --text: #e7efe9;
+      --muted: #9fb0a5; --line: #26332c; --accent: #34d399; --accent-2: #a78bfa;
+      --warn: #fb923c; --warn-bg: #2a1b10; --s1: #34d399; --s2: #60a5fa; --s3: #c084fc;
+      --shadow: 0 1px 2px rgba(0,0,0,.4), 0 6px 20px rgba(0,0,0,.3);
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #0d1411; --surface: #141d18; --surface-2: #1b2620; --text: #e7efe9;
+    --muted: #9fb0a5; --line: #26332c; --accent: #34d399; --accent-2: #a78bfa;
+    --warn: #fb923c; --warn-bg: #2a1b10; --s1: #34d399; --s2: #60a5fa; --s3: #c084fc;
+    --shadow: 0 1px 2px rgba(0,0,0,.4), 0 6px 20px rgba(0,0,0,.3);
+  }
+
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; scroll-padding-top: 76px; }
+  body {
+    margin: 0; background: var(--bg); color: var(--text);
+    font-family: "Rubik", system-ui, -apple-system, "Segoe UI", Arial, sans-serif;
+    font-size: 17px; line-height: 1.6;
+  }
+  a { color: var(--accent); }
+  h1, h2, h3 { line-height: 1.25; margin: 0 0 .5em; }
+  h2 { font-size: 1.6rem; }
+  h3 { font-size: 1.15rem; }
+  p { margin: 0 0 .8em; }
+  ul { margin: 0 0 .8em; padding-inline-start: 1.2em; }
+  li { margin-bottom: .3em; }
+
+  .wrap { max-width: 1080px; margin: 0 auto; padding: 0 16px; }
+
+  /* top bar */
+  .topbar {
+    position: sticky; top: 0; z-index: 20; background: color-mix(in srgb, var(--bg) 88%, transparent);
+    backdrop-filter: blur(8px); border-bottom: 1px solid var(--line);
+  }
+  .topbar .wrap { display: flex; align-items: center; gap: 12px; height: 60px; }
+  .brand { font-weight: 800; white-space: nowrap; }
+  .brand span { color: var(--accent); }
+  .nav { display: flex; gap: 4px; overflow-x: auto; flex: 1; scrollbar-width: none; }
+  .nav::-webkit-scrollbar { display: none; }
+  .nav a {
+    text-decoration: none; color: var(--muted); padding: 6px 10px; border-radius: 999px;
+    font-size: .9rem; white-space: nowrap;
+  }
+  .nav a:hover { background: var(--surface-2); color: var(--text); }
+  .icon-btn {
+    border: 1px solid var(--line); background: var(--surface); color: var(--text);
+    border-radius: 10px; height: 36px; min-width: 36px; cursor: pointer; font: inherit;
+  }
+
+  /* hero */
+  .hero {
+    margin: 24px 0; padding: 32px 24px; border-radius: 24px; color: #eafff5;
+    background:
+      radial-gradient(700px 300px at 85% 0%, rgba(54,227,160,.35), transparent 60%),
+      radial-gradient(600px 300px at 0% 100%, rgba(106,63,209,.45), transparent 60%),
+      #0b1a14;
+    position: relative; overflow: hidden;
+  }
+  .hero h1 { font-size: clamp(1.8rem, 5vw, 2.8rem); font-weight: 800; }
+  .hero .tag {
+    display: inline-block; font-size: .85rem; letter-spacing: .04em; padding: 4px 12px;
+    border: 1px solid rgba(54,227,160,.5); border-radius: 999px; color: var(--glow); margin-bottom: 12px;
+  }
+  .hero p { color: #c4dccf; max-width: 640px; }
+  .hero-grid { display: grid; grid-template-columns: 1fr auto; gap: 24px; align-items: end; }
+  .countdown {
+    background: rgba(255,255,255,.06); border: 1px solid rgba(255,255,255,.12); border-radius: 16px;
+    padding: 14px 18px; text-align: center; min-width: 220px;
+  }
+  .countdown .num { font-size: 2.6rem; font-weight: 800; color: var(--glow); line-height: 1; }
+  .countdown .lbl { font-size: .85rem; color: #c4dccf; }
+  @media (max-width: 720px) { .hero-grid { grid-template-columns: 1fr; } .countdown { min-width: 0; } }
+
+  /* timeline bar */
+  .timeline { display: flex; height: 44px; border-radius: 12px; overflow: hidden; margin: 8px 0 6px; box-shadow: var(--shadow); }
+  .timeline a {
+    display: flex; align-items: center; justify-content: center; color: #fff; text-decoration: none;
+    font-size: .85rem; font-weight: 500; padding: 0 6px; text-align: center; line-height: 1.2;
+  }
+  .timeline .t1 { flex: 30; background: var(--s1); }
+  .timeline .t2 { flex: 45; background: var(--s2); }
+  .timeline .t3 { flex: 15; background: var(--s3); }
+  :root[data-theme="dark"] .timeline a, :root:not([data-theme="light"]) .timeline a { color: #fff; }
+  @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .timeline a { color: #0d1411; } }
+  :root[data-theme="dark"] .timeline a { color: #0d1411; }
+  .ticks { display: flex; justify-content: space-between; color: var(--muted); font-size: .8rem; direction: rtl; }
+
+  /* lesson clock */
+  .clock {
+    display: flex; flex-wrap: wrap; gap: 12px; align-items: center; justify-content: space-between;
+    background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius);
+    padding: 14px 16px; margin: 16px 0 8px; box-shadow: var(--shadow);
+  }
+  .clock .time { font-variant-numeric: tabular-nums; font-size: 1.9rem; font-weight: 800; direction: ltr; }
+  .clock .now { color: var(--muted); }
+  .clock .now b { color: var(--text); }
+  .btn {
+    border: 0; border-radius: 10px; padding: 9px 16px; font: inherit; font-weight: 500; cursor: pointer;
+    background: var(--accent); color: #fff;
+  }
+  @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .btn { color: #0d1411; } }
+  :root[data-theme="dark"] .btn { color: #0d1411; }
+  .btn.ghost { background: transparent; color: var(--text); border: 1px solid var(--line); }
+  .progress { height: 6px; background: var(--surface-2); border-radius: 99px; overflow: hidden; width: 100%; }
+  .progress > div { height: 100%; width: 0; background: linear-gradient(90deg, var(--s3), var(--s2), var(--s1)); transition: width .5s; }
+
+  /* sections */
+  section.block { margin: 36px 0; }
+  .phase-head { display: flex; align-items: center; gap: 12px; margin-bottom: 14px; flex-wrap: wrap; }
+  .phase-head .pill {
+    font-weight: 700; font-size: .85rem; padding: 4px 12px; border-radius: 999px; color: #fff; direction: ltr;
+  }
+  @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .phase-head .pill { color: #0d1411; } }
+  :root[data-theme="dark"] .phase-head .pill { color: #0d1411; }
+  .phase-head h2 { margin: 0; }
+
+  .card {
+    background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius);
+    padding: 20px; box-shadow: var(--shadow); margin-bottom: 14px;
+  }
+  .step { border-inline-start: 5px solid var(--s1); }
+  .step.build { border-inline-start-color: var(--s2); }
+  .step.wrapup { border-inline-start-color: var(--s3); }
+  .step-head { display: flex; gap: 12px; align-items: baseline; justify-content: space-between; flex-wrap: wrap; margin-bottom: 8px; }
+  .step-head h3 { margin: 0; font-size: 1.25rem; }
+  .step-num {
+    display: inline-flex; width: 30px; height: 30px; border-radius: 50%; align-items: center; justify-content: center;
+    background: var(--surface-2); font-weight: 700; margin-inline-end: 8px; font-size: .95rem;
+  }
+  .when { color: var(--muted); font-size: .9rem; white-space: nowrap; direction: ltr; }
+  .say {
+    background: var(--surface-2); border-radius: 12px; padding: 12px 14px; margin: 10px 0;
+    border-inline-start: 3px solid var(--accent-2);
+  }
+  .say::before { content: "💬 מה להגיד: "; font-weight: 700; color: var(--accent-2); }
+  .warn {
+    background: var(--warn-bg); border-radius: 12px; padding: 12px 14px; margin: 10px 0;
+    border-inline-start: 3px solid var(--warn);
+  }
+  .warn strong { color: var(--warn); }
+
+  /* checklist */
+  .check { list-style: none; padding: 0; }
+  .check li { display: flex; gap: 10px; align-items: flex-start; padding: 6px 0; border-bottom: 1px dashed var(--line); }
+  .check li:last-child { border-bottom: 0; }
+  .check input { width: 20px; height: 20px; margin-top: 4px; accent-color: var(--accent); flex-shrink: 0; cursor: pointer; }
+  .check label { cursor: pointer; }
+  .check input:checked + label { color: var(--muted); text-decoration: line-through; }
+
+  .grid2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; }
+  .grid3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+  @media (max-width: 820px) { .grid3 { grid-template-columns: repeat(2, 1fr); } }
+  @media (max-width: 620px) { .grid2, .grid3 { grid-template-columns: 1fr; } }
+
+  .mini { background: var(--surface-2); border-radius: 12px; padding: 14px; }
+  .mini h4 { margin: 0 0 6px; font-size: 1.05rem; }
+  .mini p, .mini ul { margin: 0; font-size: .95rem; }
+  .emoji { font-size: 1.6rem; line-height: 1; display: block; margin-bottom: 6px; }
+
+  /* values */
+  .values { display: grid; grid-template-columns: repeat(6, 1fr); gap: 10px; margin: 12px 0; }
+  @media (max-width: 820px) { .values { grid-template-columns: repeat(3, 1fr); } }
+  .value { text-align: center; padding: 14px 8px; border-radius: 12px; background: var(--surface-2); }
+  .value b { display: block; font-size: 1.05rem; }
+  .value small { color: var(--muted); }
+
+  /* videos */
+  .video { position: relative; aspect-ratio: 16/9; border-radius: 12px; overflow: hidden; background: #000; }
+  .video iframe, .video img { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; object-fit: cover; }
+  .video .play {
+    position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; cursor: pointer;
+    background: linear-gradient(transparent 40%, rgba(0,0,0,.55)); border: 0; width: 100%; color: #fff; font: inherit;
+  }
+  .video .play span {
+    width: 76px; height: 54px; border-radius: 14px; background: #e11; display: flex; align-items: center; justify-content: center; font-size: 1.6rem;
+  }
+  .video-actions { display: flex; gap: 8px; margin-top: 10px; flex-wrap: wrap; }
+
+  /* presenter overlay */
+  .stage {
+    position: fixed; inset: 0; background: #000; z-index: 100; display: none; align-items: center; justify-content: center; flex-direction: column;
+  }
+  .stage.open { display: flex; }
+  .stage .frame { width: min(96vw, calc(90vh * 16 / 9)); aspect-ratio: 16/9; }
+  .stage .frame iframe { width: 100%; height: 100%; border: 0; }
+  .stage .close {
+    position: absolute; top: 14px; left: 14px; background: rgba(255,255,255,.15); color: #fff; border: 0;
+    border-radius: 999px; padding: 8px 16px; font: inherit; cursor: pointer;
+  }
+  .stage .frame img { width: 100%; height: 100%; object-fit: contain; }
+
+  /* gallery */
+  .gallery { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+  @media (max-width: 620px) { .gallery { grid-template-columns: repeat(2, 1fr); } }
+  .gallery figure { margin: 0; border-radius: 12px; overflow: hidden; background: var(--surface-2); cursor: zoom-in; position: relative; aspect-ratio: 4/3; }
+  .gallery img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .gallery figcaption {
+    position: absolute; bottom: 0; inset-inline: 0; padding: 8px 10px; font-size: .85rem; color: #fff;
+    background: linear-gradient(transparent, rgba(0,0,0,.7));
+  }
+
+  /* links */
+  .links { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
+  @media (max-width: 620px) { .links { grid-template-columns: 1fr; } }
+  .link {
+    display: flex; gap: 12px; align-items: center; padding: 14px; border-radius: 12px; text-decoration: none;
+    background: var(--surface); border: 1px solid var(--line); color: var(--text);
+  }
+  .link:hover { border-color: var(--accent); }
+  .link .ico { font-size: 1.5rem; }
+  .link small { display: block; color: var(--muted); direction: ltr; text-align: right; word-break: break-all; }
+
+  /* discussion */
+  .q { counter-increment: q; position: relative; padding-inline-start: 46px; margin-bottom: 14px; }
+  .q::before {
+    content: counter(q); position: absolute; inset-inline-start: 0; top: 0; width: 34px; height: 34px; border-radius: 10px;
+    background: var(--s3); color: #fff; display: flex; align-items: center; justify-content: center; font-weight: 700;
+  }
+  @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .q::before { color: #0d1411; } }
+  :root[data-theme="dark"] .q::before { color: #0d1411; }
+  .qs { counter-reset: q; }
+  .q b { display: block; }
+  .q span { color: var(--muted); font-size: .95rem; }
+
+  .chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px; }
+  .chip { background: var(--surface-2); border-radius: 999px; padding: 4px 12px; font-size: .9rem; }
+
+  footer { color: var(--muted); font-size: .9rem; padding: 30px 0 50px; border-top: 1px solid var(--line); margin-top: 40px; }
+
+  @media print {
+    .topbar, .clock, .video-actions, .stage, .icon-btn { display: none !important; }
+    .card { box-shadow: none; break-inside: avoid; }
+    body { background: #fff; }
+  }
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="wrap">
+    <div class="brand">FLL <span>· שיעור 1</span></div>
+    <nav class="nav" aria-label="ניווט">
+      <a href="#plan">מערך</a>
+      <a href="#opening">פתיחה</a>
+      <a href="#competition">התחרות</a>
+      <a href="#build">בנייה</a>
+      <a href="#wrapup">סיכום</a>
+      <a href="#links">קישורים</a>
+    </nav>
+    <button class="icon-btn" id="themeBtn" title="מצב תצוגה" aria-label="החלפת מצב תצוגה">🌓</button>
+  </div>
+</header>
+
+<main class="wrap">
+
+  <!-- HERO -->
+  <div class="hero">
+    <div class="hero-grid">
+      <div>
+        <div class="tag">FIRST® LEGO® League · עונת BIOGLOW™ 2026–2027</div>
+        <h1>דף מנחה למדריך – השיעור הראשון</h1>
+        <p>90 דקות: פתיחה, היכרות והסברים (30 דק'), בניית משימות בלגו בקבוצות (45 דק'), סידור וסיכום (15 דק').
+           המסר המרכזי לאורך כל השיעור: <b>זו הקבוצה שלכם – התוצר תלוי בכם, המדריך רק מסייע.</b></p>
+      </div>
+      <div class="countdown" aria-live="polite">
+        <div class="lbl">עד יום התחרות (סוף ינואר 2027)</div>
+        <div class="num" id="daysLeft">–</div>
+        <div class="lbl" id="weeksLeft">ימים</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PLAN -->
+  <section id="plan" class="block">
+    <h2>מבנה השיעור</h2>
+    <div class="timeline" role="list">
+      <a class="t1" href="#opening" role="listitem">פתיחה והסברים · 30′</a>
+      <a class="t2" href="#build" role="listitem">בניית משימות בקבוצות · 45′</a>
+      <a class="t3" href="#wrapup" role="listitem">סידור וסיכום · 15′</a>
+    </div>
+    <div class="ticks"><span>0′</span><span>30′</span><span>75′</span><span>90′</span></div>
+
+    <div class="clock">
+      <div>
+        <div class="time" id="clock">00:00</div>
+        <div class="now">עכשיו: <b id="nowStep">השיעור עוד לא התחיל</b></div>
+      </div>
+      <div style="display:flex; gap:8px; flex-wrap:wrap;">
+        <button class="btn" id="startBtn">▶ התחלת שיעור</button>
+        <button class="btn ghost" id="resetBtn">איפוס</button>
+      </div>
+      <div class="progress"><div id="bar"></div></div>
+    </div>
+
+    <div class="card">
+      <h3>✅ לפני שהילדים מגיעים</h3>
+      <ul class="check" data-store="prep">
+        <li><input type="checkbox" id="p1"><label for="p1">רשימת שמות מודפסת + תגיות שם / מדבקות</label></li>
+        <li><input type="checkbox" id="p2"><label for="p2">מקרן / מסך מחובר, הדף הזה פתוח, סאונד נבדק (הסרטונים)</label></li>
+        <li><input type="checkbox" id="p3"><label for="p3">ערכת האתגר (Challenge Set) – שקיות ממוספרות מחולקות לפי קבוצות + הוראות בנייה (מודפסות / טאבלט)</label></li>
+        <li><input type="checkbox" id="p4"><label for="p4">שולחן/מגרש התחרות פנוי, מגשים/קופסאות לחלקים לכל קבוצה</label></li>
+        <li><input type="checkbox" id="p5"><label for="p5">חלוקה מראש לקבוצות של 2–3 ילדים (מעורבות, לא לפי חברים)</label></li>
+        <li><input type="checkbox" id="p6"><label for="p6">לוח / פליפצ'ארט לכתיבת רעיונות בסיכום</label></li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- PHASE 1 -->
+  <section id="opening" class="block">
+    <div class="phase-head">
+      <span class="pill" style="background:var(--s1)">0′–30′</span>
+      <h2>חלק א' – פתיחה, היכרות והסברים</h2>
+    </div>
+
+    <article class="card step" id="s-tour">
+      <div class="step-head">
+        <h3><span class="step-num">1</span>סיור במקומות חשובים</h3>
+        <span class="when">0′–5′</span>
+      </div>
+      <ul class="check" data-store="tour">
+        <li><input type="checkbox" id="t1"><label for="t1">שירותים וברזיית מים</label></li>
+        <li><input type="checkbox" id="t2"><label for="t2">יציאות חירום ונקודת כינוס</label></li>
+        <li><input type="checkbox" id="t3"><label for="t3">מגרש / שולחן התחרות – "כאן הרובוט שלנו ינסה משימות"</label></li>
+        <li><input type="checkbox" id="t4"><label for="t4">אזור אחסון ערכות ורובוטים – איפה הכול נמצא ואיך מחזירים</label></li>
+        <li><input type="checkbox" id="t5"><label for="t5">עמדות מחשבים / טאבלטים לתכנות</label></li>
+        <li><input type="checkbox" id="t6"><label for="t6">אזור הפרויקט (לוח, חומרי כתיבה ומחקר)</label></li>
+      </ul>
+      <div class="say">"זה המרחב שלכם לכל העונה. אתם אחראים עליו – להשאיר אותו מסודר כמו שקיבלתם."</div>
+    </article>
+
+    <article class="card step" id="s-names">
+      <div class="step-head">
+        <h3><span class="step-num">2</span>הקראת שמות</h3>
+        <span class="when">5′–8′</span>
+      </div>
+      <ul>
+        <li>מקריאים שמות, מסמנים נוכחות ומחלקים תגיות שם.</li>
+        <li>כל ילד אומר בקצרה איך הוא אוהב שיקראו לו.</li>
+        <li>לוודא שיש לכם טלפון של הורה לכל ילד ומידע על אלרגיות / צרכים מיוחדים.</li>
+      </ul>
+    </article>
+
+    <article class="card step" id="s-intro">
+      <div class="step-head">
+        <h3><span class="step-num">3</span>היכרות ודגשי בטיחות</h3>
+        <span class="when">8′–15′</span>
+      </div>
+      <div class="grid2">
+        <div class="mini">
+          <h4>🎤 סבב היכרות (מהיר!)</h4>
+          <ul>
+            <li>שם + כיתה</li>
+            <li>"משהו שבניתי פעם ואני גאה בו"</li>
+            <li>"מה הכי מסקרן אותי: רובוט, תכנות או פתרון בעיות?"</li>
+          </ul>
+          <p style="margin-top:8px">טיפ: המדריך מתחיל ראשון – זה שובר את הקרח.</p>
+        </div>
+        <div class="mini">
+          <h4>🦺 דגשי בטיחות</h4>
+          <ul>
+            <li>לא רצים במרחב, במיוחד ליד שולחן המגרש.</li>
+            <li>חלקים קטנים – לא בפה, לא זורקים.</li>
+            <li>לא עולים / נשענים על שולחן המגרש.</li>
+            <li>מטפלים בציוד בעדינות (רובוט, כבלים, סוללות, מחשבים).</li>
+            <li>אוכל ושתייה רק באזור המוגדר – רחוק מהמחשבים.</li>
+            <li>יוצאים מהחדר רק באישור המדריך.</li>
+          </ul>
+        </div>
+      </div>
+    </article>
+
+    <article class="card step" id="s-competition">
+      <div class="step-head">
+        <h3><span class="step-num">4</span>הסבר על התחרות</h3>
+        <span class="when">15′–25′</span>
+      </div>
+      <p>הסרטונים והתמונות למטה (בחלק <a href="#competition">"התחרות"</a>) – להקרין על המסך. מומלץ: סרטון → הסבר → סרטון רובוט מבצע משימה.</p>
+      <div class="say">"בסוף ינואר יש יום תחרות – יום ענק עם עשרות קבוצות, מוזיקה, משחקי רובוטים וחדרי שיפוט. עד אז אנחנו בונים שני דברים: רובוט שמבצע משימות לבד, ופרויקט שפותר בעיה אמיתית מעולם הביולוגיה."</div>
+      <ul class="check" data-store="comp">
+        <li><input type="checkbox" id="c1"><label for="c1">הקרנת סרטון העונה</label></li>
+        <li><input type="checkbox" id="c2"><label for="c2">הסבר על משחק הרובוט (רובוט אוטונומי, נגיעה מחוץ לאזור המותר = הורדת נקודות)</label></li>
+        <li><input type="checkbox" id="c3"><label for="c3">הקרנת סרטון רובוט מבצע משימה</label></li>
+        <li><input type="checkbox" id="c4"><label for="c4">הסבר על פרויקט החדשנות (בעיה ביולוגית → מחקר → פתרון → הצגה בחדר השיפוט)</label></li>
+        <li><input type="checkbox" id="c5"><label for="c5">הצגת תמונות מיום השיא של התחרות</label></li>
+      </ul>
+    </article>
+
+    <article class="card step" id="s-team">
+      <div class="step-head">
+        <h3><span class="step-num">5</span>הסבר על הקבוצה והערכים</h3>
+        <span class="when">25′–30′</span>
+      </div>
+      <div class="say">"זה חוג קבוצתי. הרובוט, התוכנה והפרויקט – הכול שלכם. אני כאן כדי לעזור, לשאול שאלות ולכוון, אבל אתם מחליטים ואתם בונים."</div>
+      <div class="grid3">
+        <div class="mini"><span class="emoji">🤖</span><h4>בניית הרובוט</h4><p>מכניקה, זרועות, חיישנים.</p></div>
+        <div class="mini"><span class="emoji">🧭</span><h4>אסטרטגיה ומשימות</h4><p>אילו משימות, באיזה סדר, כמה נקודות.</p></div>
+        <div class="mini"><span class="emoji">💻</span><h4>תכנות</h4><p>שהרובוט ייסע וינווט לבד, בדיוק.</p></div>
+        <div class="mini"><span class="emoji">🔬</span><h4>פרויקט החדשנות</h4><p>בעיה ביולוגית – מחקר, פתרון, הצגה.</p></div>
+        <div class="mini"><span class="emoji">🤝</span><h4>ערכי ליבה</h4><p>איך אנחנו עובדים יחד – גם זה נשפט!</p></div>
+        <div class="mini"><span class="emoji">🔄</span><h4>כולם מתנסים בהכול</h4><p>מחליפים תפקידים לאורך העונה – כל ילד יבנה, יתכנת ויחקור.</p></div>
+      </div>
+      <h3 style="margin-top:18px">ערכי הליבה של FLL</h3>
+      <div class="values">
+        <div class="value"><b>🔎 גילוי</b><small>חוקרים דברים חדשים</small></div>
+        <div class="value"><b>💡 חדשנות</b><small>חושבים יצירתי</small></div>
+        <div class="value"><b>🌍 השפעה</b><small>משפרים את העולם</small></div>
+        <div class="value"><b>🫶 הכלה</b><small>כל אחד חשוב</small></div>
+        <div class="value"><b>🤝 עבודת צוות</b><small>חזקים יחד</small></div>
+        <div class="value"><b>🎉 הנאה</b><small>נהנים מהדרך</small></div>
+      </div>
+      <p>גם <b>מקצועיות אדיבה</b> (Gracious Professionalism) – מתחרים בכל הכוח, אבל עוזרים ומכבדים את כולם, גם קבוצות אחרות.</p>
+    </article>
+  </section>
+
+  <!-- COMPETITION MEDIA -->
+  <section id="competition" class="block">
+    <div class="phase-head">
+      <span class="pill" style="background:var(--accent-2)">להקרנה</span>
+      <h2>התחרות – סרטונים ותמונות</h2>
+    </div>
+
+    <div class="grid2">
+      <div class="card">
+        <h3>🎬 סרטון העונה / התחרות</h3>
+        <div class="video" data-yt="2J_yiy8yjHw"></div>
+        <div class="video-actions">
+          <button class="btn" data-present="2J_yiy8yjHw">⛶ הצג במסך מלא</button>
+          <a class="btn ghost" href="https://youtu.be/2J_yiy8yjHw" target="_blank" rel="noopener">פתח ביוטיוב</a>
+        </div>
+      </div>
+      <div class="card">
+        <h3>🤖 דוגמה לרובוט מבצע משימה</h3>
+        <div class="video" data-yt="CyWN3iNH8eA"></div>
+        <div class="video-actions">
+          <button class="btn" data-present="CyWN3iNH8eA">⛶ הצג במסך מלא</button>
+          <a class="btn ghost" href="https://youtu.be/CyWN3iNH8eA" target="_blank" rel="noopener">פתח ביוטיוב</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="grid2">
+      <div class="card">
+        <h3>🏁 משחק הרובוט</h3>
+        <ul>
+          <li>הקבוצה בונה ומתכנתת רובוט שיוצא מאזור השיגור <b>ונוסע לבד</b> לבצע משימות על המגרש.</li>
+          <li>כל משימה מזכה בנקודות. הקבוצה מחליטה על <b>אסטרטגיה</b>: אילו משימות ובאיזה סדר.</li>
+          <li><b>כל נגיעה ברובוט מחוץ לאזור המותר מורידה נקודות.</b> את החוקים המלאים נלמד בהמשך.</li>
+          <li>דגמי המשימות על המגרש בנויים מלגו – ואותם מתחילים לבנות כבר היום!</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>🔬 פרויקט החדשנות – ביולוגיה</h3>
+        <ul>
+          <li>נושא העונה: <b>BIOGLOW™</b> – עולם הביולוגיה והמגוון הביולוגי.</li>
+          <li>בוחרים <b>בעיה אמיתית</b> → חוקרים אותה → מתכננים פתרון → בונים אב-טיפוס / מודל.</li>
+          <li>משתפים את הפתרון עם אנשים שזה נוגע להם (מומחים, קהילה).</li>
+          <li>ביום התחרות מציגים את הפרויקט <b>בחדר השיפוט</b> מול שופטים.</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3>📸 יום השיא – סוף ינואר 2027</h3>
+      <p>מה הילדים יראו ביום התחרות: מגרשי רובוטים, קהל ומעודדים, חדרי שיפוט, טקס פרסים. לחיצה על תמונה פותחת אותה במסך מלא.</p>
+      <div class="gallery" id="gallery"></div>
+      <p id="galleryHint" style="color:var(--muted); font-size:.9rem; margin-top:10px">
+        להוספת תמונות משלכם: מעלים לתיקייה <code>images/</code> בריפו קבצים בשם <code>competition-1.jpg</code> עד <code>competition-9.jpg</code> – הם יופיעו כאן אוטומטית.
+      </p>
+    </div>
+  </section>
+
+  <!-- PHASE 2 -->
+  <section id="build" class="block">
+    <div class="phase-head">
+      <span class="pill" style="background:var(--s2)">30′–75′</span>
+      <h2>חלק ב' – בניית משימות בלגו בקבוצות</h2>
+    </div>
+
+    <article class="card step build">
+      <div class="step-head">
+        <h3><span class="step-num">6</span>הסבר קצר וחלוקה לקבוצות</h3>
+        <span class="when">30′–35′</span>
+      </div>
+      <ul>
+        <li>מחלקים לקבוצות של 2–3. כל קבוצה מקבלת שקית/שקיות ממוספרות של דגם משימה + הוראות בנייה.</li>
+        <li>מציגים על המגרש איפה הדגם יעמוד בסוף – זה נותן משמעות לבנייה.</li>
+      </ul>
+      <div class="say">"כל דגם שאתם בונים היום הוא משימה שהרובוט שלכם יצטרך לבצע. תבנו בדיוק לפי ההוראות – אם הדגם לא מדויק, הרובוט לא יעבוד עליו נכון."</div>
+    </article>
+
+    <article class="card step build">
+      <div class="step-head">
+        <h3><span class="step-num">7</span>בנייה</h3>
+        <span class="when">35′–75′</span>
+      </div>
+      <div class="grid3">
+        <div class="mini"><span class="emoji">📖</span><h4>קורא הוראות</h4><p>מנחה את השלב הבא ובודק שהשלב הקודם נכון.</p></div>
+        <div class="mini"><span class="emoji">🔍</span><h4>מאתר חלקים</h4><p>מוצא ומכין את החלקים לשלב.</p></div>
+        <div class="mini"><span class="emoji">🧱</span><h4>בונה</h4><p>מרכיב את השלב.</p></div>
+      </div>
+      <p style="margin-top:12px"><b>מחליפים תפקידים כל 10 דקות</b> – המדריך מכריז "החלפה!". כך כולם מתנסים.</p>
+
+      <h3>תפקיד המדריך בזמן הבנייה</h3>
+      <ul>
+        <li>מסתובב בין הקבוצות, <b>לא בונה במקום הילדים</b> – שואל שאלות: "איך בדקתם שזה נכון?"</li>
+        <li>שם לב למי שלא משתתף ומזמין אותו פנימה (הכלה!).</li>
+        <li>קבוצה שסיימה: מציבה את הדגם על המגרש, בודקת שהוא זז כמו בסרטון, ועוזרת לקבוצה אחרת (עבודת צוות).</li>
+        <li>מחמיא על התנהגות של ערכי ליבה – "ראיתי שעזרת לו למצוא חלק, זו בדיוק עבודת צוות".</li>
+      </ul>
+      <div class="warn"><strong>⚠ שימו לב:</strong> חלקים עודפים חוזרים לשקית / לקופסה המסומנת. לא לפרק דגמים גמורים – מסמנים אותם בשם הקבוצה.</div>
+    </article>
+  </section>
+
+  <!-- PHASE 3 -->
+  <section id="wrapup" class="block">
+    <div class="phase-head">
+      <span class="pill" style="background:var(--s3)">75′–90′</span>
+      <h2>חלק ג' – סידור וסיכום</h2>
+    </div>
+
+    <article class="card step wrapup">
+      <div class="step-head">
+        <h3><span class="step-num">8</span>סידור</h3>
+        <span class="when">75′–81′</span>
+      </div>
+      <ul class="check" data-store="clean">
+        <li><input type="checkbox" id="k1"><label for="k1">דגמים גמורים על המגרש / במדף המסומן</label></li>
+        <li><input type="checkbox" id="k2"><label for="k2">חלקים עודפים בקופסאות המסומנות, שקיות של דגמים לא גמורים סגורות ומסומנות</label></li>
+        <li><input type="checkbox" id="k3"><label for="k3">אין חלקים על הרצפה ועל השולחנות</label></li>
+        <li><input type="checkbox" id="k4"><label for="k4">כיסאות במקום, שולחנות נקיים</label></li>
+      </ul>
+      <div class="say">"מי שמסדר – מסדר בשביל הקבוצה. בשיעור הבא נמצא הכול מוכן."</div>
+    </article>
+
+    <article class="card step wrapup">
+      <div class="step-head">
+        <h3><span class="step-num">9</span>סיכום ונקודות לדיון – חושבים על בעיה</h3>
+        <span class="when">81′–90′</span>
+      </div>
+      <p><b>סבב קצר:</b> "דבר אחד שלמדתי היום" / "מה היה הכי כיף".</p>
+      <p>ואז מכוונים את הילדים לחשוב על <b>בעיה מעולם הביולוגיה</b> לקראת השיעור הבא:</p>
+
+      <div class="qs">
+        <div class="q"><b>איזה בעל חיים או צמח ליד הבית / בבית הספר שלכם נמצא בבעיה?</b><span>למשל: דבורים, ציפורים, עצים שנכרתים, צבי ים בחוף.</span></div>
+        <div class="q"><b>מה בני אדם עושים שמפריע לטבע?</b><span>זיהום פלסטיק, אור בלילה, כבישים שחוצים שטחים פתוחים, חומרי הדברה.</span></div>
+        <div class="q"><b>מי סובל מהבעיה – ומי יכול לעזור לפתור אותה?</b><span>חקלאים, וטרינרים, רשות הטבע והגנים, עירייה, חוקרים.</span></div>
+        <div class="q"><b>איך אפשר לדעת שהבעיה באמת קיימת?</b><span>מחקר: לחפש מידע, לשאול מומחה, לצלם, לספור, למדוד.</span></div>
+        <div class="q"><b>אילו יצורים "זוהרים" או משתמשים באור בטבע?</b><span>גחליליות, מדוזות, פטריות – נושא העונה BIOGLOW. מה מאיים עליהם?</span></div>
+      </div>
+
+      <div class="mini" style="margin-top:8px">
+        <h4>🏠 משימה לשיעור הבא</h4>
+        <p>כל ילד מביא <b>בעיה אחת</b> מעולם הביולוגיה שהוא שם לב אליה (תמונה / כתבה / משהו שראה), ומשפט אחד: למה זה חשוב?</p>
+      </div>
+
+      <h3 style="margin-top:16px">רעיונות לבעיות להנחיית הדיון</h3>
+      <div class="chips">
+        <span class="chip">🐝 ירידה במספר הדבורים</span>
+        <span class="chip">🐢 צבי ים ופלסטיק</span>
+        <span class="chip">🪸 הלבנת אלמוגים</span>
+        <span class="chip">🌿 מינים פולשים</span>
+        <span class="chip">🦔 חיות שנדרסות בכבישים</span>
+        <span class="chip">✨ זיהום אור וגחליליות</span>
+        <span class="chip">🌳 הצללה ועצים בעיר</span>
+        <span class="chip">🐦 ציפורים נודדות</span>
+        <span class="chip">🌱 שימור זרעים</span>
+      </div>
+      <div class="say" style="margin-top:14px">"בשיעור הבא כל אחד מציג את הבעיה שלו – ואנחנו מתחילים לבחור יחד את הבעיה של הקבוצה. זכרו: אתם הקבוצה, ואתם מחליטים."</div>
+    </article>
+  </section>
+
+  <!-- LINKS -->
+  <section id="links" class="block">
+    <h2>🔗 קישורים חשובים</h2>
+    <h3>FIRST ישראל</h3>
+    <div class="links">
+      <a class="link" href="https://firstisrael.org.il/fll/challenge/game-and-season" target="_blank" rel="noopener">
+        <span class="ico">🏆</span><span><b>FLL – המשחק והעונה</b><small>firstisrael.org.il/fll/challenge/game-and-season</small></span>
+      </a>
+      <a class="link" href="https://firstisrael.org.il/" target="_blank" rel="noopener">
+        <span class="ico">🇮🇱</span><span><b>FIRST ישראל – אתר הבית</b><small>firstisrael.org.il</small></span>
+      </a>
+    </div>
+    <h3 style="margin-top:18px">FIRST בינלאומי</h3>
+    <div class="links">
+      <a class="link" href="https://www.firstinspires.org/resource-library/fll/challenge/challenge-and-resources" target="_blank" rel="noopener">
+        <span class="ico">📚</span><span><b>חומרי האתגר (מדריך המשחק, הוראות בנייה)</b><small>firstinspires.org/resource-library/fll/challenge</small></span>
+      </a>
+      <a class="link" href="https://www.firstinspires.org/first-canopy" target="_blank" rel="noopener">
+        <span class="ico">🌿</span><span><b>FIRST CANOPY™ – עונת המגוון הביולוגי</b><small>firstinspires.org/first-canopy</small></span>
+      </a>
+    </div>
+    <h3 style="margin-top:18px">סרטונים</h3>
+    <div class="links">
+      <a class="link" href="https://youtu.be/2J_yiy8yjHw" target="_blank" rel="noopener">
+        <span class="ico">▶️</span><span><b>סרטון העונה / התחרות</b><small>youtu.be/2J_yiy8yjHw</small></span>
+      </a>
+      <a class="link" href="https://youtu.be/CyWN3iNH8eA" target="_blank" rel="noopener">
+        <span class="ico">▶️</span><span><b>דוגמה לרובוט מבצע משימה</b><small>youtu.be/CyWN3iNH8eA</small></span>
+      </a>
+    </div>
+  </section>
+
+  <footer>
+    דף מנחה למדריך · FIRST® LEGO® League · עונת 2026–2027. ✓ סימוני הצ'קליסט נשמרים בדפדפן שלך.
+    <button class="btn ghost" id="clearChecks" style="margin-inline-start:10px; padding:4px 12px; font-size:.85rem">ניקוי סימונים</button>
+  </footer>
+</main>
+
+<div class="stage" id="stage" role="dialog" aria-modal="true" aria-label="הצגה במסך מלא">
+  <button class="close" id="stageClose">✕ סגירה (Esc)</button>
+  <div class="frame" id="stageFrame"></div>
+</div>
+
+<script>
+(function () {
+  const store = {
+    get(k, d) { try { const v = localStorage.getItem(k); return v === null ? d : JSON.parse(v); } catch (e) { return d; } },
+    set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} }
+  };
+
+  /* theme */
+  const root = document.documentElement;
+  const savedTheme = store.get('fll-theme', null);
+  if (savedTheme) root.setAttribute('data-theme', savedTheme);
+  document.getElementById('themeBtn').addEventListener('click', () => {
+    const cur = root.getAttribute('data-theme') ||
+      (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+    const next = cur === 'dark' ? 'light' : 'dark';
+    root.setAttribute('data-theme', next);
+    store.set('fll-theme', next);
+  });
+
+  /* countdown to end of January 2027 */
+  const target = new Date('2027-01-28T09:00:00+02:00');
+  const days = Math.max(0, Math.ceil((target - new Date()) / 86400000));
+  document.getElementById('daysLeft').textContent = days;
+  document.getElementById('weeksLeft').textContent = 'ימים · כ-' + Math.round(days / 7) + ' שבועות / מפגשים';
+
+  /* checklists */
+  const checks = store.get('fll-checks', {});
+  document.querySelectorAll('.check input[type=checkbox]').forEach(cb => {
+    cb.checked = !!checks[cb.id];
+    cb.addEventListener('change', () => { checks[cb.id] = cb.checked; store.set('fll-checks', checks); });
+  });
+  document.getElementById('clearChecks').addEventListener('click', () => {
+    document.querySelectorAll('.check input[type=checkbox]').forEach(cb => cb.checked = false);
+    for (const k in checks) delete checks[k];
+    store.set('fll-checks', checks);
+  });
+
+  /* lesson clock */
+  const steps = [
+    [0, 5, 'סיור במקומות חשובים', 's-tour'],
+    [5, 8, 'הקראת שמות', 's-names'],
+    [8, 15, 'היכרות ודגשי בטיחות', 's-intro'],
+    [15, 25, 'הסבר על התחרות', 's-competition'],
+    [25, 30, 'הסבר על הקבוצה והערכים', 's-team'],
+    [30, 35, 'חלוקה לקבוצות', 'build'],
+    [35, 75, 'בניית משימות בקבוצות', 'build'],
+    [75, 81, 'סידור', 'wrapup'],
+    [81, 90, 'סיכום ונקודות לדיון', 'wrapup']
+  ];
+  const clockEl = document.getElementById('clock');
+  const nowEl = document.getElementById('nowStep');
+  const bar = document.getElementById('bar');
+  const startBtn = document.getElementById('startBtn');
+  let startAt = store.get('fll-start', null);
+  let lastStep = null;
+  function tick() {
+    if (!startAt) { clockEl.textContent = '00:00'; nowEl.textContent = 'השיעור עוד לא התחיל'; bar.style.width = '0'; startBtn.style.display = ''; return; }
+    startBtn.style.display = 'none';
+    const sec = Math.floor((Date.now() - startAt) / 1000);
+    const m = Math.floor(sec / 60), s = sec % 60;
+    clockEl.textContent = String(m).padStart(2, '0') + ':' + String(s).padStart(2, '0');
+    bar.style.width = Math.min(100, sec / 54) + '%';
+    const cur = steps.find(st => m >= st[0] && m < st[1]);
+    if (cur) {
+      const left = cur[1] * 60 - sec;
+      nowEl.textContent = cur[2] + ' · נותרו ' + Math.floor(left / 60) + ':' + String(left % 60).padStart(2, '0');
+      if (lastStep !== cur[2]) {
+        if (lastStep !== null && 'vibrate' in navigator) navigator.vibrate(200);
+        lastStep = cur[2];
+      }
+    } else {
+      nowEl.textContent = m >= 90 ? 'השיעור הסתיים 🎉' : '';
+    }
+  }
+  startBtn.addEventListener('click', () => { startAt = Date.now(); store.set('fll-start', startAt); tick(); });
+  document.getElementById('resetBtn').addEventListener('click', () => { startAt = null; lastStep = null; store.set('fll-start', null); tick(); });
+  tick(); setInterval(tick, 1000);
+
+  /* youtube: lightweight thumbnail, loads player on click */
+  const embed = (id, autoplay) =>
+    `<iframe src="https://www.youtube-nocookie.com/embed/${id}?rel=0&modestbranding=1${autoplay ? '&autoplay=1' : ''}" title="YouTube" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen" allowfullscreen></iframe>`;
+  document.querySelectorAll('.video[data-yt]').forEach(el => {
+    const id = el.dataset.yt;
+    el.innerHTML = `<img src="https://i.ytimg.com/vi/${id}/hqdefault.jpg" alt="" loading="lazy"><button class="play" aria-label="נגן סרטון"><span>▶</span></button>`;
+    el.querySelector('.play').addEventListener('click', () => { el.innerHTML = embed(id, true); });
+  });
+
+  /* presenter stage */
+  const stage = document.getElementById('stage');
+  const frame = document.getElementById('stageFrame');
+  function openStage(html) {
+    document.querySelectorAll('.video[data-yt] iframe').forEach(f => {
+      const v = f.closest('.video'); v.innerHTML = ''; // stop inline players
+      const id = v.dataset.yt;
+      v.innerHTML = `<img src="https://i.ytimg.com/vi/${id}/hqdefault.jpg" alt=""><button class="play" aria-label="נגן סרטון"><span>▶</span></button>`;
+      v.querySelector('.play').addEventListener('click', () => { v.innerHTML = embed(id, true); });
+    });
+    frame.innerHTML = html;
+    stage.classList.add('open');
+    if (stage.requestFullscreen) stage.requestFullscreen().catch(() => {});
+  }
+  function closeStage() {
+    frame.innerHTML = '';
+    stage.classList.remove('open');
+    if (document.fullscreenElement) document.exitFullscreen().catch(() => {});
+  }
+  document.querySelectorAll('[data-present]').forEach(b => b.addEventListener('click', () => openStage(embed(b.dataset.present, true))));
+  document.getElementById('stageClose').addEventListener('click', closeStage);
+  document.addEventListener('keydown', e => { if (e.key === 'Escape' && stage.classList.contains('open')) closeStage(); });
+  document.addEventListener('fullscreenchange', () => { if (!document.fullscreenElement && stage.classList.contains('open')) closeStage(); });
+
+  /* gallery: competition-day images (local images/ first, then video stills) */
+  const gallery = document.getElementById('gallery');
+  const captions = ['מגרשי משחק הרובוט', 'הקבוצות בפעולה', 'חדר השיפוט', 'הקהל והמעודדים', 'טקס הפרסים', 'עבודת צוות', 'יום התחרות', 'יום התחרות', 'יום התחרות'];
+  function addFig(src, cap) {
+    // reserve the slot to keep order, show it only once the image actually loads
+    const f = document.createElement('figure');
+    f.hidden = true;
+    gallery.appendChild(f);
+    const probe = new Image();
+    probe.onload = () => {
+      f.innerHTML = `<img src="${src}" alt="${cap}"><figcaption>${cap}</figcaption>`;
+      f.addEventListener('click', () => openStage(`<img src="${src}" alt="${cap}">`));
+      f.hidden = false;
+    };
+    probe.onerror = () => f.remove();
+    probe.src = src;
+  }
+  for (let i = 1; i <= 9; i++) addFig(`images/competition-${i}.jpg`, captions[i - 1]);
+  addFig('https://i.ytimg.com/vi/2J_yiy8yjHw/hqdefault.jpg', 'מתוך סרטון התחרות');
+  addFig('https://i.ytimg.com/vi/CyWN3iNH8eA/hqdefault.jpg', 'רובוט מבצע משימה');
+})();
+</script>
+</body>
+</html>
