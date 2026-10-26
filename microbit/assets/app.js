@@ -17,6 +17,10 @@ const ICON_PATHS = {
   external: '<path d="M15 3h6v6"/><path d="M10 14 21 3"/><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>',
   printer: '<path d="M6 9V2h12v7"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8" rx="1"/>',
   clipboard: '<rect x="8" y="2" width="8" height="4" rx="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/>',
+  folder: '<path d="M20 20a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.9a2 2 0 0 1-1.69-.9L9.6 3.9A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2Z"/>',
+  copy: '<rect x="8" y="8" width="14" height="14" rx="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/>',
+  puzzle: '<path d="M19.4 7.3a1 1 0 0 1-.7-1V5a2 2 0 0 0-2-2h-2.4a1 1 0 0 1-.9-.6 2 2 0 0 0-3.8 0 1 1 0 0 1-.9.6H6.3a2 2 0 0 0-2 2v2.4a1 1 0 0 1-.6.9 2 2 0 0 0 0 3.8 1 1 0 0 1 .6.9v2.4a2 2 0 0 0 2 2h2.4a1 1 0 0 1 .9.6 2 2 0 0 0 3.8 0 1 1 0 0 1 .9-.6h2.4a2 2 0 0 0 2-2v-1.3a1 1 0 0 1 .7-1 2 2 0 0 0 0-3.4Z"/>',
+  backpack: '<path d="M4 10a4 4 0 0 1 4-4h8a4 4 0 0 1 4 4v10a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2Z"/><path d="M8 10h8"/><path d="M8 18h8"/><path d="M8 22v-6a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v6"/><path d="M9 6V4a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2"/>',
   image: '<rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.1-3.1a2 2 0 0 0-2.8 0L6 21"/>',
 };
 function icon(name, cls = "") {
@@ -26,7 +30,43 @@ function icon(name, cls = "") {
 async function loadYaml(path) {
   const res = await fetch(path, { cache: "no-cache" });
   if (!res.ok) throw new Error(`לא הצלחתי לטעון את ${path}`);
-  return jsyaml.load(await res.text());
+  try {
+    return jsyaml.load(await res.text());
+  } catch (e) {
+    const line = e.mark ? ` (בערך בשורה ${e.mark.line + 1})` : "";
+    throw new Error(`יש טעות כתיבה בקובץ ${path}${line} – בדקו רווחים בתחילת השורה ומירכאות`);
+  }
+}
+
+// Only http(s) links from the YAML become hrefs.
+function safeUrl(u) {
+  return /^https?:\/\//i.test(String(u ?? "").trim()) ? String(u).trim() : "";
+}
+
+// "Lesson plans" button for guides: the lesson's own plan link, else the course-wide folder.
+function planButton(course, lesson) {
+  const url = safeUrl(lesson?.links?.plan) || safeUrl(course.guide_materials?.url);
+  if (!url) return "";
+  const title = lesson?.links?.plan && safeUrl(lesson.links.plan) ? "מערך השיעור" : course.guide_materials?.title || "מערכי השיעור";
+  return `<a class="btn secondary" href="${esc(url)}" target="_blank" rel="noopener">${icon("folder")}${esc(title)}</a>`;
+}
+
+// Guide-only box on Tiny:bit lessons: why and how to add the robot's MakeCode extension.
+function tinybitHtml(course) {
+  const tb = course.tinybit || {};
+  const ext = safeUrl(tb.extension);
+  const starter = safeUrl(tb.starter);
+  if (!ext && !starter) return "";
+  return `<section class="ext-box">
+    <h2>${icon("puzzle")}התוסף של Tiny:bit</h2>
+    ${tb.note ? `<p>${fmt(tb.note)}</p>` : ""}
+    ${ext ? `<div class="ext-url"><code dir="ltr">${esc(ext)}</code>
+      <button type="button" class="btn" data-copy="${esc(ext)}">${icon("copy")}<span>העתקת כתובת התוסף</span></button></div>` : ""}
+    <div class="code-actions">
+      ${starter ? `<a class="btn" href="${esc(makecodeUrl(starter))}" target="_blank" rel="noopener">${icon("external")}פרויקט התחלתי עם התוסף</a>` : ""}
+      ${ext ? `<a class="btn secondary" href="${esc(ext)}" target="_blank" rel="noopener">${icon("external")}דף התוסף ב-GitHub</a>` : ""}
+    </div>
+  </section>`;
 }
 
 function esc(s) {
@@ -66,10 +106,16 @@ function warn(container, messages) {
 }
 
 async function loadAll() {
-  const [schedule, lessonsData] = await Promise.all([loadYaml("data/schedule.yml"), loadYaml("data/lessons.yml")]);
+  const [schedule, lessonsData, course] = await Promise.all([
+    loadYaml("data/schedule.yml"),
+    loadYaml("data/lessons.yml"),
+    // Course settings are optional: a missing or broken file only hides the guide links.
+    loadYaml("data/course.yml").catch((e) => ({ _error: `${e.message} (data/course.yml) – כפתורי המדריך לא יוצגו` })),
+  ]);
   const lessons = {};
   for (const l of lessonsData.lessons || []) lessons[l.id] = l;
   const problems = [];
+  if (course?._error) problems.push(course._error);
   const sessionOf = {};
   for (const s of schedule.sessions || []) {
     for (const id of s.lessons || []) {
@@ -77,7 +123,7 @@ async function loadAll() {
       else if (!sessionOf[id]) sessionOf[id] = s;
     }
   }
-  return { schedule, lessons, sessionOf, problems };
+  return { schedule, lessons, sessionOf, problems, course: course && !course._error ? course : {} };
 }
 
 function lessonUrl(id, view) {
@@ -428,7 +474,7 @@ function codeHtml(links) {
   </section>`;
 }
 
-function guideHtml(l) {
+function guideHtml(l, course = {}) {
   const g = l.guide || {};
   const parts = [];
   if (g.objectives?.length) parts.push(`<div><h3>מטרות</h3>${list(g.objectives)}</div>`);
@@ -441,6 +487,7 @@ function guideHtml(l) {
   return `<details class="guide-notes" open>
     <summary>${icon("clipboard")}<span>הערות למדריך</span>${g.duration ? `<span class="duration">${fmt(g.duration)}</span>` : ""}</summary>
     <div class="guide-grid">${parts.join("")}</div>
+    ${planButton(course, l) ? `<div class="guide-actions">${planButton(course, l)}</div>` : ""}
   </details>`;
 }
 
@@ -449,12 +496,12 @@ function markNav(view) {
   const nav = document.querySelector(".site-header nav");
   if (!nav) return;
   if (view === "guide" && !nav.querySelector('a[href="guide.html"]'))
-    nav.insertAdjacentHTML("beforeend", '<a href="guide.html">מדריכים</a>');
+    (nav.querySelector("a.all") || nav.lastElementChild).insertAdjacentHTML("beforebegin", '<a href="guide.html">מדריכים</a>');
   const cur = nav.querySelector(`a[href="${view === "guide" ? "guide.html" : "student.html"}"]`);
   if (cur) cur.setAttribute("aria-current", "page");
 }
 
-function renderLesson(main, { schedule, lessons, sessionOf }) {
+function renderLesson(main, { schedule, lessons, sessionOf, course }) {
   const params = new URLSearchParams(location.search);
   const id = params.get("id");
   const view = params.get("view") === "guide" ? "guide" : "student";
@@ -482,17 +529,21 @@ function renderLesson(main, { schedule, lessons, sessionOf }) {
     </header>`;
 
   if (view === "guide") {
-    html += guideHtml(l);
+    html += guideHtml(l, course);
+    if (l.source === "tinybit") html += tinybitHtml(course);
     html += `<div class="view-divider"><span>מה התלמידים רואים</span><a href="${lessonUrl(id, "student")}">פתיחת דף התלמיד</a></div>`;
   }
 
   if (st.intro) html += `<p class="lead">${fmt(st.intro)}</p>`;
   if (st.goal) html += `<p class="goal">${icon("target")}<span><strong>היום נבנה:</strong> ${fmt(st.goal)}</span></p>`;
+  const kit = st.materials?.length ? st.materials : l.guide?.materials || [];
+  if (kit.length)
+    html += `<section class="kit"><h2>${icon("backpack")}מה צריך היום</h2><ul>${kit.map((m) => `<li>${fmt(m)}</li>`).join("")}</ul></section>`;
   if (st.concept) html += `<section class="lesson-section concept"><h2>${icon("sparkle")}רעיון חדש</h2><p>${fmt(st.concept)}</p></section>`;
   if (st.steps?.length) html += `<section class="lesson-section steps"><h2>שלב אחרי שלב</h2>${list(st.steps, true)}</section>`;
   if (l.images?.length)
     html += `<section class="lesson-section"><h2>${icon("image")}כך נראה הקוד</h2>${l.images
-      .map((src) => `<img class="code-img" src="${esc(src)}" alt="תמונת הקוד של ${esc(l.title)}" loading="lazy">`)
+      .map((src) => `<img class="code-img" src="${esc(src)}" alt="תמונת הקוד של ${esc(l.title)}" loading="lazy" data-src="${esc(src)}">`)
       .join("")}</section>`;
 
   html += codeHtml(links);
@@ -528,6 +579,36 @@ function renderLesson(main, { schedule, lessons, sessionOf }) {
   main.innerHTML = html;
 }
 
+// A code image that fails to load becomes a clear message instead of a broken icon.
+function imageFallbacks(main) {
+  main.addEventListener("error", (e) => {
+    const img = e.target;
+    if (!(img instanceof HTMLImageElement) || !img.classList.contains("code-img")) return;
+    const box = document.createElement("div");
+    box.className = "img-missing";
+    box.innerHTML = `${icon("image")}<span>התמונה לא נטענה. אפשר לנסות <a href="${esc(img.dataset.src || img.src)}" target="_blank" rel="noopener">לפתוח אותה ישירות</a>, או להשתמש בכפתור MakeCode למטה.</span>`;
+    img.replaceWith(box);
+  }, true);
+}
+
+// "Copy" buttons (the Tiny:bit extension address).
+function copyButtons(main) {
+  main.addEventListener("click", async (e) => {
+    const b = e.target.closest("[data-copy]");
+    if (!b) return;
+    const label = b.querySelector("span");
+    try {
+      await navigator.clipboard.writeText(b.dataset.copy);
+      label.textContent = "הועתק ✓";
+    } catch {
+      const code = b.parentElement.querySelector("code");
+      if (code) getSelection().selectAllChildren(code);
+      label.textContent = "סמנו והעתיקו (Ctrl+C)";
+    }
+    setTimeout(() => (label.textContent = "העתקת כתובת התוסף"), 2500);
+  });
+}
+
 document.addEventListener("DOMContentLoaded", async () => {
   const page = document.body.dataset.page;
   const main = document.querySelector("main");
@@ -543,8 +624,14 @@ document.addEventListener("DOMContentLoaded", async () => {
   if (page === "guide") {
     renderCourse(main, data, "guide");
     renderBank(main, data);
+    const plan = planButton(data.course);
+    if (plan) main.querySelector(".lead")?.insertAdjacentHTML("afterend", `<div class="guide-actions">${plan}</div>`);
     setupTabs(main);
   }
-  if (page === "lesson") renderLesson(main, data);
+  if (page === "lesson") {
+    imageFallbacks(main);
+    copyButtons(main);
+    renderLesson(main, data);
+  }
   warn(main, data.problems);
 });
