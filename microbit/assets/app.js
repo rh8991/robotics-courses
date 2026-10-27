@@ -20,6 +20,7 @@ const ICON_PATHS = {
   folder: '<path d="M20 20a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.9a2 2 0 0 1-1.69-.9L9.6 3.9A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2Z"/>',
   copy: '<rect x="8" y="8" width="14" height="14" rx="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/>',
   puzzle: '<path d="M19.4 7.3a1 1 0 0 1-.7-1V5a2 2 0 0 0-2-2h-2.4a1 1 0 0 1-.9-.6 2 2 0 0 0-3.8 0 1 1 0 0 1-.9.6H6.3a2 2 0 0 0-2 2v2.4a1 1 0 0 1-.6.9 2 2 0 0 0 0 3.8 1 1 0 0 1 .6.9v2.4a2 2 0 0 0 2 2h2.4a1 1 0 0 1 .9.6 2 2 0 0 0 3.8 0 1 1 0 0 1 .9-.6h2.4a2 2 0 0 0 2-2v-1.3a1 1 0 0 1 .7-1 2 2 0 0 0 0-3.4Z"/>',
+  lifebuoy: '<circle cx="12" cy="12" r="10"/><path d="m4.93 4.93 4.24 4.24"/><path d="m14.83 9.17 4.24-4.24"/><path d="m14.83 14.83 4.24 4.24"/><path d="m9.17 14.83-4.24 4.24"/><circle cx="12" cy="12" r="4"/>',
   backpack: '<path d="M4 10a4 4 0 0 1 4-4h8a4 4 0 0 1 4 4v10a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2Z"/><path d="M8 10h8"/><path d="M8 18h8"/><path d="M8 22v-6a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v6"/><path d="M9 6V4a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2"/>',
   image: '<rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.1-3.1a2 2 0 0 0-2.8 0L6 21"/>',
 };
@@ -261,12 +262,14 @@ function sessionsHtml({ schedule, lessons }, view, partId) {
         .map((id) => `<a href="${lessonUrl(id, view)}">${esc(lessons[id].title)}</a>`)
         .join("");
       const note = view === "guide" ? s.guide_note : s.student_note;
+      const print = view === "guide" ? `<a class="session-print" href="lesson.html?session=${encodeURIComponent(s.num)}&view=guide">${icon("printer")}כל המפגש להדפסה</a>` : "";
       return `<li class="session">
         <span class="num" aria-hidden="true">${esc(s.num)}</span>
         <div class="session-body">
           <h3><span class="visually-hidden">מפגש ${esc(s.num)}: </span>${s.emoji ? `<span class="s-emoji" aria-hidden="true">${esc(s.emoji)}</span>` : ""}${esc(s.title)}</h3>
           ${note ? `<p class="note">${fmt(note)}</p>` : ""}
           <div class="session-lessons">${links}</div>
+          ${print}
         </div>
       </li>`;
     })
@@ -491,12 +494,70 @@ function guideHtml(l, course = {}) {
   </details>`;
 }
 
+function helpUrl(view) {
+  return view === "guide" ? "help.html?view=guide" : "help.html";
+}
+
+// "Not working?" box on a lesson: its own tips (student.troubleshooting) + a link to the help page.
+function troubleHtml(items, view) {
+  if (!items?.length) return "";
+  return `<section class="trouble">
+    <h2>${icon("lifebuoy")}לא עובד?</h2>
+    ${list(items)}
+    <p><a href="${helpUrl(view)}">לעוד תקלות נפוצות ופתרונות</a></p>
+  </section>`;
+}
+
+// Everything a list of lessons needs, without repeats.
+function kitOf(ids, lessons) {
+  const seen = new Set();
+  const out = [];
+  for (const id of ids) for (const m of lessons[id]?.guide?.materials || []) if (!seen.has(m)) { seen.add(m); out.push(m); }
+  return out;
+}
+
+// lesson.html?session=5&view=guide – the whole session (all its lessons) on one page, for printing.
+function renderSession(main, { schedule, lessons, course }, num) {
+  const s = (schedule.sessions || []).find((x) => String(x.num) === String(num));
+  if (!s) {
+    main.innerHTML = `<div class="empty"><p><strong>המפגש לא נמצא.</strong></p><p><a href="guide.html">חזרה לדף המדריך</a></p></div>`;
+    return;
+  }
+  document.title = `מפגש ${s.num}: ${s.title} | מעבדת מיקרוביט – טכנודע`;
+  const ids = (s.lessons || []).filter((id) => lessons[id]);
+  const kit = kitOf(ids, lessons);
+  let html = `<nav class="crumb"><a href="guide.html#${esc(s.part)}">${icon("back")}דף המדריך</a></nav>
+    <header class="lesson-head src-${esc(s.part)}">
+      <h1>${s.emoji ? `${esc(s.emoji)} ` : ""}מפגש ${esc(s.num)}: ${esc(s.title)}</h1>
+      ${s.guide_note ? `<p class="note">${fmt(s.guide_note)}</p>` : ""}
+    </header>
+    <div class="guide-actions"><button type="button" class="btn" onclick="window.print()">${icon("printer")}הדפסת המפגש</button>${planButton(course)}</div>`;
+  if (kit.length) html += `<section class="kit"><h2>${icon("backpack")}ציוד למפגש</h2><ul>${kit.map((m) => `<li>${fmt(m)}</li>`).join("")}</ul></section>`;
+  html += ids.map((id, i) => {
+    const l = lessons[id];
+    const st = l.student || {};
+    return `<article class="session-lesson">
+      <h2>${i + 1}. <a href="${lessonUrl(id, "guide")}">${esc(l.title)}</a></h2>
+      ${guideHtml(l, {})}
+      ${st.goal ? `<p class="goal">${icon("target")}<span><strong>היום נבנה:</strong> ${fmt(st.goal)}</span></p>` : ""}
+      ${st.steps?.length ? `<section class="lesson-section steps"><h3>שלב אחרי שלב</h3>${list(st.steps, true)}</section>` : ""}
+      ${st.challenge ? `<p><strong>אתגר:</strong> ${fmt(st.challenge)}</p>` : ""}
+    </article>`;
+  }).join("");
+  main.innerHTML = html;
+}
+
 // The lesson page serves both views: show the guide link and mark the current page to match.
-function markNav(view) {
+function markNav(view, mark = true) {
   const nav = document.querySelector(".site-header nav");
   if (!nav) return;
-  if (view === "guide" && !nav.querySelector('a[href="guide.html"]'))
-    (nav.querySelector("a.all") || nav.lastElementChild).insertAdjacentHTML("beforebegin", '<a href="guide.html">מדריכים</a>');
+  const help = nav.querySelector('a[href^="help.html"]');
+  if (view === "guide") {
+    if (!nav.querySelector('a[href="guide.html"]'))
+      (help || nav.querySelector("a.all") || nav.lastElementChild).insertAdjacentHTML("beforebegin", '<a href="guide.html">מדריכים</a>');
+    if (help) help.setAttribute("href", "help.html?view=guide");
+  }
+  if (!mark) return;
   const cur = nav.querySelector(`a[href="${view === "guide" ? "guide.html" : "student.html"}"]`);
   if (cur) cur.setAttribute("aria-current", "page");
 }
@@ -507,6 +568,7 @@ function renderLesson(main, { schedule, lessons, sessionOf, course }) {
   const view = params.get("view") === "guide" ? "guide" : "student";
   const l = lessons[id];
   markNav(view);
+  if (params.get("session")) return renderSession(main, { schedule, lessons, course }, params.get("session"));
   if (!l) {
     main.innerHTML = `<div class="empty"><p><strong>השיעור לא נמצא.</strong></p><p><a href="student.html">חזרה לרשימת המפגשים</a></p></div>`;
     return;
@@ -555,6 +617,8 @@ function renderLesson(main, { schedule, lessons, sessionOf, course }) {
     </div>`;
   }
 
+  html += troubleHtml(st.troubleshooting, view);
+
   if (siblings.length)
     html += `<nav class="next-up" aria-label="עוד במפגש הזה"><span>עוד במפגש הזה:</span>${siblings
       .map((x) => `<a href="${lessonUrl(x, view)}">${esc(lessons[x].title)}</a>`)
@@ -573,10 +637,70 @@ function renderLesson(main, { schedule, lessons, sessionOf, course }) {
   const foot = [];
   if (links.source) foot.push(`<a href="${esc(links.source)}" target="_blank" rel="noopener">${icon("external")}השיעור המקורי</a>`);
   if (view === "guide" && links.slides) foot.push(`<a href="${esc(links.slides)}">${icon("download")}מצגת (pptx)</a>`);
+  foot.push(`<a href="${helpUrl(view)}">${icon("lifebuoy")}פתרון תקלות</a>`);
   foot.push(`<button type="button" onclick="window.print()">${icon("printer")}הדפסה</button>`);
   html += `<div class="lesson-foot">${foot.join("")}</div>`;
 
   main.innerHTML = html;
+}
+
+// help.html – troubleshooting from data/help.yml, with a quick filter.
+async function renderHelp(main) {
+  const root = main.querySelector("#help");
+  const view = new URLSearchParams(location.search).get("view") === "guide" ? "guide" : "student";
+  markNav(view, false);
+  let data;
+  try {
+    data = (await loadYaml("data/help.yml")) || {};
+  } catch (e) {
+    root.innerHTML = `<div class="warning">${esc(e.message)}</div>`;
+    return;
+  }
+  const groups = (data.groups || []).filter(Boolean);
+  root.innerHTML = `
+    <div class="search" role="search">
+      <label for="hq" class="visually-hidden">חיפוש תקלה</label>
+      ${icon("search", "search-icon")}
+      <input id="hq" type="search" autocomplete="off" placeholder="מה קורה? למשל: לא מזהה, צליל, רובוט…">
+    </div>
+    <p class="search-status" aria-live="polite"></p>
+    ${groups.map((g, gi) => `<section class="help-group" data-g="${gi}">
+      <h2>${g.emoji ? `<span aria-hidden="true">${esc(g.emoji)}</span> ` : ""}${esc(g.title)}</h2>
+      ${(g.items || []).filter(Boolean).map((it) => `<details class="help-item" data-text="${esc(norm([it.q, ...(it.steps || []), view === "guide" ? it.guide : ""].join(" ")))}">
+        <summary>${fmt(it.q)}</summary>
+        ${list(it.steps, true)}
+        ${view === "guide" && it.guide ? `<p class="help-guide">${icon("clipboard")}<span><strong>למדריך:</strong> ${fmt(it.guide)}</span></p>` : ""}
+      </details>`).join("")}
+    </section>`).join("")}`;
+  const q = root.querySelector("#hq");
+  const status = root.querySelector(".search-status");
+  q.addEventListener("input", () => {
+    const terms = norm(q.value).split(" ").filter(Boolean);
+    let shown = 0;
+    root.querySelectorAll(".help-item").forEach((d) => {
+      const ok = terms.every((t) => has(d.dataset.text, t));
+      d.hidden = !ok;
+      if (ok) shown++;
+      d.open = ok && terms.length > 0;
+    });
+    root.querySelectorAll(".help-group").forEach((g) => (g.hidden = !g.querySelector(".help-item:not([hidden])")));
+    status.textContent = terms.length ? (shown ? `נמצאו ${shown} תקלות` : "לא נמצא – נסו מילה אחרת, או קראו למדריך") : "";
+  });
+}
+
+// Guide page "equipment" tab: what each session needs, from the lessons' materials.
+function renderKit(main, { schedule, lessons }) {
+  const el = main.querySelector("#kit");
+  if (!el) return;
+  const parts = schedule.parts || [];
+  el.innerHTML = `<div class="guide-actions"><button type="button" class="btn secondary" onclick="window.print()">${icon("printer")}הדפסת רשימת הציוד</button></div>
+    ${parts.map((p) => `<h2 class="kit-part">${esc(p.title)}</h2>
+      <table class="kit-table"><thead><tr><th>מפגש</th><th>ציוד</th></tr></thead><tbody>${
+        (schedule.sessions || []).filter((s) => s.part === p.id).map((s) => {
+          const kit = kitOf((s.lessons || []).filter((id) => lessons[id]), lessons);
+          return `<tr><td><strong>${esc(s.num)}.</strong> ${esc(s.title)}</td><td>${kit.length ? kit.map((m) => `<span class="kit-chip">${fmt(m)}</span>`).join("") : '<span class="muted">לא צוין</span>'}</td></tr>`;
+        }).join("")
+      }</tbody></table>`).join("")}`;
 }
 
 // A code image that fails to load becomes a clear message instead of a broken icon.
@@ -613,6 +737,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   const page = document.body.dataset.page;
   const main = document.querySelector("main");
   if (page === "home") return;
+  if (page === "help") return renderHelp(main);
   let data;
   try {
     data = await loadAll();
@@ -624,6 +749,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   if (page === "guide") {
     renderCourse(main, data, "guide");
     renderBank(main, data);
+    renderKit(main, data);
     const plan = planButton(data.course);
     if (plan) main.querySelector(".lead")?.insertAdjacentHTML("afterend", `<div class="guide-actions">${plan}</div>`);
     setupTabs(main);

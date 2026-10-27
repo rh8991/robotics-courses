@@ -15,7 +15,7 @@
 <header class="site-header"><div class="inner">
   <a href="index.html"><img src="assets/logo.png" alt="טכנודע – המוזיאון הישראלי לרפואה ומדע, חדרה"></a>
   <a class="course-name" href="index.html">מעבדת מיקרוביט</a>
-  <nav aria-label="ניווט באתר"><a class="home" href="index.html"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 21v-8a1 1 0 0 0-1-1h-4a1 1 0 0 0-1 1v8"/><path d="M3 10a2 2 0 0 1 .7-1.5l7-6a2 2 0 0 1 2.6 0l7 6a2 2 0 0 1 .7 1.5v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>דף הבית</a><a href="student.html">תלמידים</a><a href="guide.html" aria-current="page">מדריכים</a><a class="all" href="../">כל הקורסים</a></nav>
+  <nav aria-label="ניווט באתר"><a class="home" href="index.html"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 21v-8a1 1 0 0 0-1-1h-4a1 1 0 0 0-1 1v8"/><path d="M3 10a2 2 0 0 1 .7-1.5l7-6a2 2 0 0 1 2.6 0l7 6a2 2 0 0 1 .7 1.5v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>דף הבית</a><a href="student.html">תלמידים</a><a href="guide.html" aria-current="page">מדריכים</a><a href="help.html?view=guide">עזרה</a><a class="all" href="../">כל הקורסים</a></nav>
 </div></header>
 <main>
   <h1>דף המדריך</h1>
@@ -23,6 +23,7 @@
   <div class="tabs" role="tablist">
     <button role="tab" aria-selected="true" data-tab="tab-sessions">28 המפגשים</button>
     <button role="tab" aria-selected="false" data-tab="tab-bank">מאגר שיעורים נוסף</button>
+    <button role="tab" aria-selected="false" data-tab="tab-kit">ציוד לפי מפגש</button>
   </div>
   <section id="tab-sessions"><div id="course"><p class="loading">טוען…</p></div></section>
   <section id="tab-bank" hidden>
@@ -43,6 +44,7 @@
     </div>
     <ul id="bank" class="bank"></ul>
   </section>
+  <section id="tab-kit" hidden><div id="kit"><p class="loading">טוען…</p></div></section>
 </main>
 <footer class="site-footer">טכנודע – המוזיאון הישראלי לרפואה ומדע, חדרה · השיעורים מבוססים על <a href="https://microbit.org/projects/make-it-code-it/" target="_blank" rel="noopener">micro:bit Educational Foundation</a> ועל <a href="https://github.com/YahboomTechnology/Tiny-bit" target="_blank" rel="noopener">Yahboom Tiny:bit</a></footer>
 </body>
