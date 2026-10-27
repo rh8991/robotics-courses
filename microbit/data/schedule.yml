@@ -8,6 +8,7 @@
 #  - שיעור שלא מופיע באף מפגש עובר אוטומטית ל"מאגר שיעורים נוסף" בדף המדריך.
 #  - part: microbit (חלק א׳) או tinybit (חלק ב׳)
 #  - student_note / guide_note – משפט קצר (לא חובה) שיופיע על כרטיס המפגש.
+#  - emoji – אייקון קטן ליד שם המפגש (לא חובה).
 #  - שימו לב לרווחים בתחילת השורה – הם חשובים!
 # ============================================================
 
@@ -24,141 +25,169 @@ sessions:
   - num: 1
     part: microbit
     title: "נעים להכיר, מיקרוביט!"
+    emoji: "👋"
     lessons: [meet-your-microbit, heart]
 
   - num: 2
     part: microbit
     title: "אנימציה ולולאה לעולם"
+    emoji: "💓"
     lessons: [beating-heart, animated-animals]
 
   - num: 3
     part: microbit
     title: "כפתורים ואירועים"
+    emoji: "🔘"
     lessons: [emotion-badge, flashing-emotions]
 
   - num: 4
     part: microbit
     title: "טקסט ותמונות"
+    emoji: "🔤"
     lessons: [name-badge, here-comes-the-sun]
 
   - num: 5
     part: microbit
     title: "מטלטלים ומגרילים"
+    emoji: "🎲"
     lessons: [dice, graphical-dice]
 
   - num: 6
     part: microbit
     title: "תנאים – אם... אז..."
+    emoji: "🔀"
     lessons: [rock-paper-scissors, magic-8ball]
 
   - num: 7
     part: microbit
     title: "משתנים – הזיכרון של המחשב"
+    emoji: "🔢"
     lessons: [counter, step-counter]
 
   - num: 8
     part: microbit
     title: "חיישן האור"
+    emoji: "💡"
     lessons: [nightlight, sunlight-sensor]
 
   - num: 9
     part: microbit
     title: "טמפרטורה ומצפן"
+    emoji: "🧭"
     lessons: [thermometer, compass-bearing]
 
   - num: 10
     part: microbit
     title: "מוזיקה וצלילים"
+    emoji: "🎵"
     lessons: [jukebox, make-some-noise]
 
   - num: 11
     part: microbit
     title: "המיקרופון"
+    emoji: "🎤"
     lessons: [sound-meter, clap-hearts]
     guide_note: "דורש micro:bit V2"
 
   - num: 12
     part: microbit
     title: "רדיו – מדברים בין לוחות"
+    emoji: "📡"
     lessons: [teleporting-duck, send-a-smile]
 
   - num: 13
     part: microbit
     title: "אזעקות חכמות"
+    emoji: "🚨"
     lessons: [simple-tilt-alarm, cookie-tin-alarm]
 
   - num: 14
     part: microbit
     title: "משחקים"
+    emoji: "🎮"
     lessons: [hot-potato-game, times-tables-tester]
 
   - num: 15
     part: microbit
     title: "פרויקט גדול"
+    emoji: "🐣"
     lessons: [microbit-pet, treasure-hunt]
 
   - num: 16
     part: microbit
     title: "פרויקט סיכום – חלק א׳"
+    emoji: "🏆"
     lessons: [project-part-a]
 
   # ---------- חלק ב׳: Tiny:bit ----------
   - num: 17
     part: tinybit
     title: "פוגשים את הרובוט"
+    emoji: "🤖"
     lessons: [tb-first-trial]
 
   - num: 18
     part: tinybit
     title: "אורות הרובוט"
+    emoji: "🌈"
     lessons: [tb-led-light, tb-breathing-light]
 
   - num: 19
     part: tinybit
     title: "פנסים צבעוניים"
+    emoji: "🔦"
     lessons: [tb-rgb-searching-light, tb-rgb-exchange]
 
   - num: 20
     part: tinybit
     title: "הרובוט שר"
+    emoji: "🎶"
     lessons: [tb-internal-music, tb-merry-christmas]
 
   - num: 21
     part: tinybit
     title: "הרובוט נוסע!"
+    emoji: "🚗"
     lessons: [tb-advance, tb-carrun]
 
   - num: 22
     part: tinybit
     title: "מהירות וריקוד"
+    emoji: "💃"
     lessons: [tb-control-speed, tb-dancer]
 
   - num: 23
     part: tinybit
     title: "מתכננים מסלול"
+    emoji: "🗺️"
     lessons: [tb-route-plan]
 
   - num: 24
     part: tinybit
     title: "חיישן המרחק"
+    emoji: "📏"
     lessons: [tb-measuring-worker, tb-distance-light]
 
   - num: 25
     part: tinybit
     title: "נזהרים ממכשולים"
+    emoji: "🚧"
     lessons: [tb-obstacle-avoidance, tb-coward]
 
   - num: 26
     part: tinybit
     title: "נוסעים על קו"
+    emoji: "〰️"
     lessons: [tb-tracking]
 
   - num: 27
     part: tinybit
     title: "שלט וקול"
+    emoji: "🎛️"
     lessons: [tb-ir-control, tb-voice-control-light]
 
   - num: 28
     part: tinybit
     title: "פרויקט גמר ותערוכה"
+    emoji: "🎉"
     lessons: [project-final]
