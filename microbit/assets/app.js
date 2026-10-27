@@ -264,7 +264,7 @@ function sessionsHtml({ schedule, lessons }, view, partId) {
       return `<li class="session">
         <span class="num" aria-hidden="true">${esc(s.num)}</span>
         <div class="session-body">
-          <h3><span class="visually-hidden">מפגש ${esc(s.num)}: </span>${esc(s.title)}</h3>
+          <h3><span class="visually-hidden">מפגש ${esc(s.num)}: </span>${s.emoji ? `<span class="s-emoji" aria-hidden="true">${esc(s.emoji)}</span>` : ""}${esc(s.title)}</h3>
           ${note ? `<p class="note">${fmt(note)}</p>` : ""}
           <div class="session-lessons">${links}</div>
         </div>
@@ -523,7 +523,7 @@ function renderLesson(main, { schedule, lessons, sessionOf, course }) {
   let html = `<nav class="crumb"><a href="${back}">${icon("back")}${
     session ? `מפגש ${esc(session.num)}: ${esc(session.title)}` : view === "guide" ? "דף המדריך" : "כל המפגשים"
   }</a></nav>
-    <header class="lesson-head">
+    <header class="lesson-head src-${esc(l.source || "microbit")}">
       <h1>${esc(l.title)}</h1>
       <div class="tags">${tags(l)}</div>
     </header>`;
