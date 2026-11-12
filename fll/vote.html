@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>FLL – הצבעות</title>
+<meta name="description" content="הצבעות בכיתה: שם הקבוצה, לוגו, בעיה ומיקוד לחקר, משימות במשחק הרובוט">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/style.css">
+<link rel="stylesheet" href="assets/vote.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/js-yaml/4.1.0/js-yaml.min.js"></script>
+<script src="assets/vote.js" defer></script>
+</head>
+<body>
+
+<nav class="sitebar" aria-label="ניווט באתר">
+  <div class="wrap">
+    <a href="../">🏠 כל הקורסים</a>
+    <a href="index.html">👋 היכרות</a>
+    <a href="control.html">📋 לוח בקרה</a>
+    <a href="vote.html" aria-current="page">🗳️ הצבעות</a>
+  </div>
+</nav>
+
+<header class="topbar">
+  <div class="wrap">
+    <div class="brand">FLL <span>· הצבעות</span></div>
+    <span class="spacer"></span>
+    <button class="icon-btn" id="fsBtn" title="מסך מלא (למקרן)" aria-label="מסך מלא">⛶</button>
+    <button class="icon-btn" id="themeBtn" title="מצב תצוגה" aria-label="החלפת מצב תצוגה">🌓</button>
+  </div>
+</header>
+
+<main class="wrap" id="app">
+  <p class="loading">טוען…</p>
+</main>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+</body>
+</html>

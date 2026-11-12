@@ -4,6 +4,11 @@
 # ============================================================
 #  איך עורכים:
 #  - season    – שם העונה ותאריך התחרות (הספירה לאחור מחושבת ממנו).
+#       meeting_day – (לא חובה) יום המפגש הרגיל: ראשון / שני / שלישי / רביעי / חמישי / שישי.
+#                     זו רק ברירת מחדל – כל מדריך יכול לבחור יום אחר בעמוד עצמו (⚙️ הגדרות).
+#                     בלי השדה הזה – שלישי.
+#       no_meetings – (לא חובה) תאריכים שאין בהם מפגש (חגים, חופשות), למשל ["2026-12-08"].
+#                     המפגש בתאריך כזה מדולג ולא נספר.
 #  - areas     – תחומי העבודה. כל משימה משויכת לתחום אחד (area).
 #  - phases    – שלבי העונה לפי הסדר. לכל שלב:
 #       id     – מזהה באנגלית, בלי רווחים (לא לשנות אחרי שהתחלתם לסמן!)
@@ -15,10 +20,16 @@
 #           text  – מה עושים          who  – מדריך / קבוצה
 #           due   – תאריך יעד (לא חובה)   area – מזהה תחום מתוך areas
 #           link  – קישור (לא חובה): { title: "...", url: "..." }
+#           links – כמה קישורים (לא חובה), רשימה של { title: "...", url: "..." }
 #           verify: true – מציג תגית "לבדוק" (מידע שעוד לא אומת מול FIRST ישראל)
 #  - judging   – ארבעת תחומי השיפוט: מה השופטים בודקים (look_for) + rubric – קישור למחוון.
 #  - rating_levels – ארבע הדרגות לדירוג העצמי (מהנמוכה לגבוהה).
 #  - links     – קישורים וקבצים, מחולקים לקבוצות.
+#
+#  איך העמוד בוחר "מה עושים במפגש הזה":
+#    🎯 משימה עם due – מופיעה במפגש שלפני תאריך היעד (מיום המפגש ועד לפני המפגש הבא).
+#    🔁 משימה בלי due – מופיעה בכל מפגש שבו השלב שלה פעיל (בין from ל-to).
+#    ⏰ משימה שתאריך היעד שלה עבר ולא סומנה – מופיעה במפגש של היום.
 #  עיצוב בתוך טקסט:  **מודגש**
 #  שימו לב לרווחים בתחילת השורה – הם חשובים!
 # ============================================================
@@ -29,6 +40,8 @@ season:
     title: "יום התחרות"
     date: "2027-01-28"
     verify: true          # תאריך מתוך עמוד ההיכרות – לאמת מול FIRST ישראל
+  meeting_day: שלישי
+  no_meetings: []
   intro: "כל מה שצריך לעשות מעכשיו ועד התחרות, לפי שלבים. מסמנים ✓ כשמשימה בוצעה – הסימונים נשמרים בדפדפן הזה."
 
 areas:
@@ -92,13 +105,31 @@ phases:
         who: מדריך
         area: game
         link: { title: "חומרי האתגר", url: "https://www.firstinspires.org/resource-library/fll/challenge/challenge-and-resources" }
-      - id: adm-event-register
-        text: "רישום לתחרות ותשלום דמי השתתפות"
+      - id: adm-delegation
+        text: "להירשם (עד 16.11) להדרכת ראשי משלחות – יום ה׳ 19.11, 9:30–16:00"
         who: מדריך
-        due: "2026-12-15"
+        due: "2026-11-16"
+        area: admin
+        link: { title: "עדכון 8 של FIRST ישראל", url: "https://firstisrael.org.il/fll/challenge/2026-11-05" }
+        verify: true      # FIRST ישראל כתבו שהתאריך עוד לא סופי
+      - id: adm-payment
+        text: "תשלום דמי ההשתתפות לעונה – מועד אחרון 25.11"
+        who: מדריך
+        due: "2026-11-25"
         area: admin
         link: { title: "עלויות", url: "https://firstisrael.org.il/fll/challenge/pricing" }
-        verify: true
+      - id: adm-event-register
+        text: "רישום לתחרות – נפתח ביום ד׳ 2.12 ב-19:30"
+        who: מדריך
+        due: "2026-12-02"
+        area: admin
+        link: { title: "עדכון 8 של FIRST ישראל", url: "https://firstisrael.org.il/fll/challenge/2026-11-05" }
+      - id: adm-mentors
+        text: "מפגש הכנה למנטורים בזום – יום א׳ 27.12 ב-19:00"
+        who: מדריך
+        due: "2026-12-27"
+        area: admin
+        link: { title: "עדכון 8 של FIRST ישראל", url: "https://firstisrael.org.il/fll/challenge/2026-11-05" }
       - id: adm-parents-event
         text: "הודעה להורים על יום התחרות: מקום, שעות, הסעה, הורים מלווים"
         who: מדריך
@@ -127,6 +158,9 @@ phases:
         text: "בוחרים שם לקבוצה (ואפשר גם לוגו / חולצה)"
         who: קבוצה
         area: team
+        links:
+          - { title: "🗳️ הצבעה על שם", url: "vote.html#name" }
+          - { title: "🎨 הצבעה על לוגו", url: "vote.html#logo" }
       - id: team-notebook
         text: "פותחים יומן הנדסי של הקבוצה (מחברת או תיקייה משותפת) – מתעדים בו כל מפגש"
         who: קבוצה
@@ -195,15 +229,28 @@ phases:
         who: קבוצה
         due: "2026-11-10"
         area: project
+        links:
+          - { title: "🗳️ הצבעה על הבעיה", url: "vote.html#problem" }
+          - { title: "🎯 הצבעה על מיקוד החקר", url: "vote.html#focus" }
       - id: res-lecture
         text: "צופים בהרצאה המקוונת לקבוצות ורושמים 3 דברים שלמדנו"
         who: קבוצה
         area: project
-        verify: true
+        links:
+          - { title: "🎥 הקלטת מפגש המומחים (מוזיאון הטבע, 2.11)", url: "https://firstisrael.org.il/files/fll-challenge/NRlIjAB9MlJJhC/%20%D7%97%D7%95%D7%A7%D7%A8%D7%99%D7%9D%20%D7%90%D7%AA%20%D7%94%D7%9E%D7%92%D7%95%D7%95%D7%9F%20%D7%94%D7%91%D7%99%D7%95%D7%9C%D7%95%D7%92%D7%99%20%D7%99%D7%97%D7%93%20%D7%A2%D7%9D%20%D7%9E%D7%95%D7%96%D7%99%D7%90%D7%95%D7%9F%20%D7%94%D7%98%D7%91%D7%A2%20.mp4" }
+          - { title: "🦋 ניטור פרפרים בישראל", url: "https://www.gluecad-bio.com/hompage.asp?lng=hbr" }
+          - { title: "🦈 עמותת כרישים בישראל", url: "https://www.sharks.org.il/" }
+          - { title: "🔭 מיזמי מדע אזרחי", url: "https://citizen-science.smnh.tau.ac.il/cs-projects/" }
+          - { title: "🏛️ מוזיאון הטבע ע״ש שטיינהרדט", url: "https://smnh.tau.ac.il/" }
       - id: res-sources
         text: "אוספים מידע מ-3 מקורות לפחות (כתבה, אתר מוסמך, ספר) ומתעדים ביומן"
         who: קבוצה
         area: project
+        links:
+          - { title: "🦋 ניטור פרפרים בישראל", url: "https://www.gluecad-bio.com/hompage.asp?lng=hbr" }
+          - { title: "🦈 עמותת כרישים בישראל", url: "https://www.sharks.org.il/" }
+          - { title: "🔭 מיזמי מדע אזרחי", url: "https://citizen-science.smnh.tau.ac.il/cs-projects/" }
+          - { title: "🏛️ מוזיאון הטבע", url: "https://smnh.tau.ac.il/" }
       - id: res-expert
         text: "מוצאים מומחה (חוקר, וטרינר, רשות הטבע והגנים...) ומקיימים איתו שיחה"
         who: מדריך
@@ -232,6 +279,7 @@ phases:
         who: קבוצה
         due: "2026-12-08"
         area: game
+        link: { title: "🗳️ הצבעה על המשימות", url: "vote.html#missions" }
       - id: str-attach
         text: "מתכננים ובונים אביזרים (attachments) שמתחלפים מהר"
         who: קבוצה
@@ -416,6 +464,14 @@ links:
       - { emoji: "💳", title: "עלויות והרשמה", url: "https://firstisrael.org.il/fll/challenge/pricing" }
       - { emoji: "🇮🇱", title: "FIRST ישראל – FLL", url: "https://firstisrael.org.il/fll" }
       - { emoji: "🎓", title: "הרצאה מקוונת לקבוצות (דורשת הרשמה)", url: "https://firstisrael.org.il/fll", verify: true }
+      - { emoji: "📰", title: "עדכון 8 (5.11.2026): תשלום, רישום לתחרות, מפגשים", url: "https://firstisrael.org.il/fll/challenge/2026-11-05" }
+  - group: "🔬 מחקר: מגוון ביולוגי (ממפגש המומחים, 2.11)"
+    items:
+      - { emoji: "🎥", title: "הקלטת מפגש המומחים עם מוזיאון הטבע", url: "https://firstisrael.org.il/files/fll-challenge/NRlIjAB9MlJJhC/%20%D7%97%D7%95%D7%A7%D7%A8%D7%99%D7%9D%20%D7%90%D7%AA%20%D7%94%D7%9E%D7%92%D7%95%D7%95%D7%9F%20%D7%94%D7%91%D7%99%D7%95%D7%9C%D7%95%D7%92%D7%99%20%D7%99%D7%97%D7%93%20%D7%A2%D7%9D%20%D7%9E%D7%95%D7%96%D7%99%D7%90%D7%95%D7%9F%20%D7%94%D7%98%D7%91%D7%A2%20.mp4" }
+      - { emoji: "🦋", title: "התוכנית הלאומית לניטור פרפרים בישראל", url: "https://www.gluecad-bio.com/hompage.asp?lng=hbr" }
+      - { emoji: "🦈", title: "עמותת כרישים בישראל", url: "https://www.sharks.org.il/" }
+      - { emoji: "🔭", title: "מיזמי המרכז הישראלי למדע אזרחי", url: "https://citizen-science.smnh.tau.ac.il/cs-projects/" }
+      - { emoji: "🏛️", title: "מוזיאון הטבע ע״ש שטיינהרדט", url: "https://smnh.tau.ac.il/" }
   - group: "FIRST בינלאומי (אנגלית)"
     items:
       - { emoji: "📚", title: "חומרי האתגר: מדריך העונה, עדכונים, מחוונים", url: "https://www.firstinspires.org/resource-library/fll/challenge/challenge-and-resources" }
