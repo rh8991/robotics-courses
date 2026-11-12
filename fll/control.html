@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>FLL – לוח בקרה למדריך</title>
-<meta name="description" content="לוח עבודה ובקרה למדריך FIRST LEGO League: כל המשימות עד התחרות, לפי שלבים">
+<meta name="description" content="לוח עבודה ובקרה למדריך FIRST LEGO League: מה עושים במפגש של היום, וכל המשימות עד התחרות">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;700;800&display=swap" rel="stylesheet">
@@ -20,18 +20,18 @@
     <a href="../">🏠 כל הקורסים</a>
     <a href="index.html">👋 היכרות</a>
     <a href="control.html" aria-current="page">📋 לוח בקרה</a>
+    <a href="vote.html">🗳️ הצבעות</a>
   </div>
 </nav>
 
 <header class="topbar">
   <div class="wrap">
     <div class="brand">FLL <span>· לוח בקרה</span></div>
-    <nav class="nav" aria-label="ניווט בעמוד">
-      <a href="#now">מה עכשיו</a>
-      <a href="#phases">שלבים</a>
-      <a href="#judging">שיפוט</a>
-      <a href="#links">קישורים</a>
-      <a href="#data">גיבוי</a>
+    <nav class="nav tabs" aria-label="לשוניות הלוח">
+      <a href="#meeting" data-tab="meeting"><span class="ti" aria-hidden="true">📅 </span>המפגש</a>
+      <a href="#season" data-tab="season"><span class="ti" aria-hidden="true">🗺️ </span>כל העונה</a>
+      <a href="#judging" data-tab="judging"><span class="ti" aria-hidden="true">⚖️ </span>שיפוט</a>
+      <a href="#links" data-tab="links"><span class="ti" aria-hidden="true">🔗 </span>קישורים</a>
     </nav>
     <button class="icon-btn" id="themeBtn" title="מצב תצוגה" aria-label="החלפת מצב תצוגה">🌓</button>
   </div>
@@ -40,6 +40,8 @@
 <main class="wrap" id="app">
   <p class="loading">טוען…</p>
 </main>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
 
 </body>
 </html>
