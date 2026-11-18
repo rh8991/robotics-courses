@@ -1,8 +1,9 @@
 // לוח בקרה למדריך: reads data/season.yml and shows "this meeting" (built from the date), the whole season,
 // judging self-rating and links. Everything the guide marks is saved automatically in this browser
-// (localStorage), with optional export/import to a file under "⚙️ הגדרות ועוד".
+// (localStorage), with optional export/import to a file under "⚙️ הגדרות ועוד" (the file also carries the vote page's decisions).
 
 const STORE_KEY = "fll-control-v1"; // unchanged, so marks from the previous version are kept
+const VOTE_KEY = "fll-vote-v1"; // the vote page's saved decisions (see vote.js) – included in the backup file
 const DAY = 86400000;
 const DAYS = ["ראשון", "שני", "שלישי", "רביעי", "חמישי", "שישי", "שבת"];
 const DEFAULT_DAY = 2; // שלישי
@@ -479,7 +480,7 @@ function settingsHtml(S) {
       <select id="daySel">${DAYS.slice(0, 6).map((n, i) => `<option value="${i}" ${i === day ? "selected" : ""}>יום ${n}</option>`).join("")}</select>
       ${state.meetingDay != null && state.meetingDay !== (S.meetingDay ?? DEFAULT_DAY) ? `<button type="button" class="btn ghost small" id="dayReset">חזרה ליום שבקובץ (${DAYS[S.meetingDay ?? DEFAULT_DAY]})</button>` : ""}
     </div>
-    <p class="hint">הסימונים, הדירוגים וההערות <b>נשמרים לבד</b> – אבל רק בדפדפן ובמכשיר הזה. כדי להעביר אותם למכשיר אחר או למדריך נוסף:</p>
+    <p class="hint">הסימונים, הדירוגים, ההערות וההצבעות <b>נשמרים לבד</b> – אבל רק בדפדפן ובמכשיר הזה. קובץ הגיבוי כולל את כולם. כדי להעביר אותם למכשיר אחר או למדריך נוסף:</p>
     <div class="data-actions">
       <button type="button" class="btn ghost" id="exportBtn">⬇ שמירה לקובץ</button>
       <label class="btn ghost" for="importFile" style="cursor:pointer">⬆ טעינה מקובץ</label>
@@ -778,18 +779,24 @@ async function importState(input) {
     if (!d || typeof d !== "object" || !d.done) throw new Error();
     state.done = d.done || {}; state.ratings = d.ratings || {}; state.notes = d.notes || {}; state.mnotes = d.mnotes || {};
     save(); show();
-    msg(`נטען מהקובץ ${f.name}.`);
+    // files saved before votes were added have no "votes" – then the vote page is left as it is
+    const hasVotes = d.votes && typeof d.votes === "object" && d.votes.polls;
+    if (hasVotes) store.set(VOTE_KEY, d.votes);
+    msg(`נטען מהקובץ ${f.name}${hasVotes ? ", כולל ההצבעות" : ""}.`);
   } catch (err) {
     msg("הקובץ לא נראה כמו גיבוי של לוח הבקרה – לא נטען כלום.");
   }
 }
 function exportState() {
   const data = { saved: new Date().toISOString(), done: state.done, ratings: state.ratings, notes: state.notes, mnotes: state.mnotes };
+  // the vote page's decisions live under their own key – put them in the same backup file (optional field)
+  const votes = store.get(VOTE_KEY, null);
+  if (votes && typeof votes === "object") data.votes = votes;
   const a = document.createElement("a");
   a.href = URL.createObjectURL(new Blob([JSON.stringify(data, null, 2)], { type: "application/json" }));
-  a.download = `fll-control-${iso(today())}.json`;
+  a.download = `fll-backup-${iso(today())}.json`;
   document.body.appendChild(a); a.click(); a.remove();
-  msg("הקובץ נשמר בתיקיית ההורדות.");
+  msg(data.votes ? "הקובץ נשמר בתיקיית ההורדות, כולל ההצבעות." : "הקובץ נשמר בתיקיית ההורדות.");
 }
 function msg(t) {
   const el = document.getElementById("statusMsg");
